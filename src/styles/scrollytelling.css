@@ -41,6 +41,21 @@
   pointer-events: none;
 }
 
+.story-stage::before {
+  position: absolute;
+  top: calc(4.75rem - 1px);
+  right: 0;
+  left: 0;
+  z-index: 3;
+  width: min(100% - (var(--gutter) * 2), var(--page-max));
+  height: 1px;
+  margin-inline: auto;
+  content: "";
+  background: var(--rule);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
 .story-poster,
 .story-media,
 .story-video {
@@ -91,7 +106,6 @@
   min-height: 4.75rem;
   padding-top: env(safe-area-inset-top);
   margin-inline: auto;
-  border-bottom: 1px solid var(--rule);
 }
 
 .story-wordmark {
@@ -356,6 +370,10 @@
     width: calc(100% - 2rem);
   }
 
+  .story-stage::before {
+    width: calc(100% - 2rem);
+  }
+
   .story-copy-deck {
     display: flex;
     align-items: flex-end;
@@ -408,6 +426,10 @@
 @media (max-width: 35rem) {
   .story-header {
     min-height: 4.25rem;
+  }
+
+  .story-stage::before {
+    top: calc(4.25rem - 1px);
   }
 
   .story-wordmark {
