@@ -26,15 +26,49 @@ function VideoSources({ name }: VideoSourcesProps) {
 
 export default function ScrollytellingHome() {
   const rootRef = useRef<HTMLElement>(null);
+  const posterRef = useRef<HTMLImageElement>(null);
   const introRef = useRef<HTMLVideoElement>(null);
   const mainRef = useRef<HTMLVideoElement>(null);
   const outroRef = useRef<HTMLVideoElement>(null);
+  const criticalReadyRef = useRef(false);
   const [activeChapter, setActiveChapter] = useState(0);
   const [activeLayer, setActiveLayer] = useState<StoryLayer>('intro');
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [mediaFailed, setMediaFailed] = useState(false);
 
   const staticMode = prefersReducedMotion || mediaFailed;
+
+  useEffect(() => {
+    let cancelled = false;
+    const media = staticMode ? posterRef.current : introRef.current;
+
+    const notifyCriticalReady = () => {
+      if (cancelled || criticalReadyRef.current) return;
+      criticalReadyRef.current = true;
+      window.dispatchEvent(new CustomEvent('muzi:critical-ready'));
+    };
+
+    if (!media) {
+      notifyCriticalReady();
+      return;
+    }
+
+    if (media instanceof HTMLVideoElement) {
+      if (media.readyState >= 2) notifyCriticalReady();
+      else media.addEventListener('loadeddata', notifyCriticalReady, { once: true });
+    } else if (media.complete) notifyCriticalReady();
+    else {
+      media.addEventListener('load', notifyCriticalReady, { once: true });
+      media.addEventListener('error', notifyCriticalReady, { once: true });
+    }
+
+    return () => {
+      cancelled = true;
+      media.removeEventListener('loadeddata', notifyCriticalReady);
+      media.removeEventListener('load', notifyCriticalReady);
+      media.removeEventListener('error', notifyCriticalReady);
+    };
+  }, [staticMode]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -230,7 +264,7 @@ export default function ScrollytellingHome() {
       aria-label="Muzi 个人网站滚动叙事"
     >
       <div className="story-stage">
-        <img className="story-poster" src={POSTER} alt="" aria-hidden="true" />
+        <img ref={posterRef} className="story-poster" src={POSTER} alt="" aria-hidden="true" />
 
         <div className="story-media" aria-hidden="true">
           <video
@@ -243,6 +277,7 @@ export default function ScrollytellingHome() {
             preload="auto"
             poster={POSTER}
             tabIndex={-1}
+            onError={() => setMediaFailed(true)}
           >
             <VideoSources name="intro-loop" />
           </video>
@@ -271,15 +306,6 @@ export default function ScrollytellingHome() {
             <VideoSources name="outro-loop" />
           </video>
         </div>
-
-        <header className="story-header">
-          <a className="story-wordmark" href="/" aria-label="Muzi 首页">Muzi</a>
-          <nav className="story-nav" aria-label="主要导航">
-            <a href="/works/">Works</a>
-            <a href="/notes/">Notes</a>
-            <a href="/about/">About</a>
-          </nav>
-        </header>
 
         <div className="story-copy-deck" aria-live="polite">
           {STORY_CHAPTERS.map((chapter, index) => {

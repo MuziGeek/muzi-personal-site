@@ -220,8 +220,11 @@ Works 只呈现可以直接访问的真实产品；Open Source 把公开 Skills 
 
 ### Site Navigation
 
-- **Style:** 4.5rem 高的暖纸顶栏，以 1px 底线连接 Muzi wordmark 与 Index 触发器。
-- **States:** Index 面板最小宽度 10rem；链接 hover/focus 使用暖棕底，全站 focus-visible 使用 3px 暖棕轮廓。
+- **Style:** 4.5rem 高的暖纸顶栏，以 1px 底线连接 Muzi wordmark 与 Index 触发器；首页复用同一顶栏并以透明覆盖层悬浮在滚动叙事上方，分隔线仍由叙事舞台绘制在人物层下方。
+- **Index Trigger:** `Index` 使用 700 字重并与自绘加号组成至少 44px 高的触发器；hover、focus 与展开状态共享从左向右延伸的暖棕底线，展开时加号旋转为关闭符号。首页顶部不再单独显示 Works、Notes、About 链接。
+- **Paper Directory:** 目录面板宽约 `18–21rem`，使用浅纸面、1px 规则线、1rem 圆角与克制双层阴影；六个页面以 `01–06 / 页面名 / 方向箭头` 排列，当前页面使用 `aria-current="page"` 与常驻黄色标题标记。
+- **Motion:** 面板在约 260ms 内由轻微上移和缩小恢复，目录行以约 35ms 间隔进入；hover/focus 时标题黄色标记延伸、箭头右移。粗指针关闭横向位移，`prefers-reduced-motion` 直接呈现最终状态。
+- **Behavior:** 使用原生按钮 disclosure；支持 Enter、Space、Escape、外部点击与关闭后焦点恢复。面板不使用全屏遮罩、玻璃模糊、GSAP 或方向性 3D。
 
 ### Works Intro Cue
 
@@ -281,6 +284,14 @@ Works 只呈现可以直接访问的真实产品；Open Source 把公开 Skills 
 - **Independent Activity:** 多张项目卡同时可见时各自保持待机，离开交互 600ms 后从当前位置恢复；失焦和取消操作必须可靠复位。
 - **Fallback:** 任一舞台素材失败时显示官方搜索精灵静态图；项目标题、说明和外链始终独立可用，不再回退到真实首页截图。
 - **Reduced Motion:** `prefers-reduced-motion: reduce` 停止自动播放和角色微动画，默认显示“发现”场景；触摸和键盘仍可即时切换静态状态。粗指针保留可见时自动循环和触摸接管，但不启用卡片 hover 抬升。
+
+### Session Loading Expression
+
+- **Purpose:** 每个浏览器会话首次进入时使用全屏暖纸遮罩承接首屏资源准备；它是真实加载反馈，不显示虚假百分比、进度条或可见 Loading 文案。
+- **Artwork:** 使用八帧透明 Muzi Crayon 头像，顺序为平静、眨眼、好奇、侧视、轻微惊讶、微笑、挤眼吐舌与墨镜耍酷。变化集中在五官；除墨镜彩蛋帧外，头发、脸型、服装、裁切和主体位置必须稳定。
+- **Motion:** 表情以精灵图直接跳切，不交叉淡化。切换时只允许 `scale(.985) → 1` 的 110ms 轻反馈，不做上下弹跳、旋转或弹性回弹；眨眼最短，微笑与墨镜帧稍长。
+- **Lifecycle:** 首帧优先显示，精灵图解码后才开始循环；首页等待 intro 视频或静态海报可显示，其他页面等待普通加载完成。页面就绪后在完整循环边界退出，最长 4 秒必须释放遮罩。
+- **Fallback:** 精灵图失败时保留静态首帧；`prefers-reduced-motion` 与 Save-Data 只显示静态首帧并在页面就绪后直接退出。页面隐藏时暂停计时，同一会话后续导航不得重复出现。
 
 ### Text Links
 

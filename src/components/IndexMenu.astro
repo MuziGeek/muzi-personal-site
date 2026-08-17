@@ -1,12 +1,60 @@
+---
+const INDEX_ITEMS = [
+  { href: '/', label: 'Home' },
+  { href: '/works/', label: 'Works' },
+  { href: '/open-source/', label: 'Open Source' },
+  { href: '/bookmarks/', label: 'Bookmarks' },
+  { href: '/notes/', label: 'Notes' },
+  { href: '/about/', label: 'About' },
+] as const;
+
+const currentPath = Astro.url.pathname.endsWith('/')
+  ? Astro.url.pathname
+  : `${Astro.url.pathname}/`;
+
+const isCurrentPath = (href: string) => (
+  href === '/' ? currentPath === '/' : currentPath.startsWith(href)
+);
+---
+
 <div class="site-index" data-site-index>
-  <button class="index-toggle" type="button" data-index-toggle aria-expanded="false" aria-controls="site-index-panel">Index</button>
-  <nav class="index-panel" id="site-index-panel" data-index-panel aria-label="页面目录" hidden>
-    <a href="/">Home</a>
-    <a href="/works/">Works</a>
-    <a href="/open-source/">Open Source</a>
-    <a href="/bookmarks/">Bookmarks</a>
-    <a href="/notes/">Notes</a>
-    <a href="/about/">About</a>
+  <button
+    class="index-toggle"
+    type="button"
+    data-index-toggle
+    aria-expanded="false"
+    aria-controls="site-index-panel"
+  >
+    <span>Index</span>
+    <span class="index-toggle__mark" aria-hidden="true">
+      <span></span>
+      <span></span>
+    </span>
+  </button>
+
+  <nav
+    class="index-panel"
+    id="site-index-panel"
+    data-index-panel
+    aria-label="页面目录"
+    hidden
+    inert
+  >
+    <ol class="index-panel__list">
+      {INDEX_ITEMS.map((item, index) => (
+        <li class="index-panel__item" style={`--index-position: ${index}`}>
+          <a href={item.href} aria-current={isCurrentPath(item.href) ? 'page' : undefined}>
+            <span class="index-link__number" aria-hidden="true">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <span class="index-link__label">{item.label}</span>
+            <svg class="index-link__arrow" viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M4 10h11M11 6l4 4-4 4" />
+            </svg>
+          </a>
+        </li>
+      ))}
+    </ol>
   </nav>
 </div>
 
@@ -16,31 +64,60 @@
   const panel = menu?.querySelector('[data-index-panel]');
 
   if (menu instanceof HTMLElement && toggle instanceof HTMLButtonElement && panel instanceof HTMLElement) {
-    const close = (restoreFocus = false) => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let closeTimer = 0;
+    let openFrame = 0;
+
+    const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
+
+    const finishClose = () => {
       panel.hidden = true;
+      closeTimer = 0;
+    };
+
+    const close = (restoreFocus = false, immediate = reducedMotion.matches) => {
+      window.clearTimeout(closeTimer);
+      window.cancelAnimationFrame(openFrame);
+      delete menu.dataset.open;
       toggle.setAttribute('aria-expanded', 'false');
+      panel.setAttribute('inert', '');
+
+      if (immediate) finishClose();
+      else closeTimer = window.setTimeout(finishClose, 210);
+
       if (restoreFocus) toggle.focus();
     };
+
     const open = () => {
+      window.clearTimeout(closeTimer);
+      window.cancelAnimationFrame(openFrame);
+      closeTimer = 0;
       panel.hidden = false;
+      panel.removeAttribute('inert');
       toggle.setAttribute('aria-expanded', 'true');
+      openFrame = window.requestAnimationFrame(() => {
+        if (isOpen()) menu.dataset.open = '';
+      });
     };
-    toggle.addEventListener('click', () => panel.hidden ? open() : close());
-    toggle.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        panel.hidden ? open() : close();
-      }
+
+    toggle.addEventListener('click', () => {
+      if (isOpen()) close();
+      else open();
     });
+
     document.addEventListener('pointerdown', (event) => {
-      if (!menu.contains(event.target as Node)) close();
+      if (isOpen() && !menu.contains(event.target as Node)) close();
     });
+
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && !panel.hidden) {
+      if (event.key === 'Escape' && isOpen()) {
         event.preventDefault();
         close(true);
       }
     });
-    panel.addEventListener('click', () => close());
+
+    panel.addEventListener('click', (event) => {
+      if (event.target instanceof Element && event.target.closest('a')) close(false, true);
+    });
   }
 </script>

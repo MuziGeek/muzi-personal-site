@@ -1,0 +1,187 @@
+---
+import {
+  SITE_LOADER_EXIT_MS,
+  SITE_LOADER_FRAMES,
+  SITE_LOADER_MAX_WAIT_MS,
+  SITE_LOADER_SESSION_KEY,
+} from '../lib/siteLoader';
+
+const frameDurations = SITE_LOADER_FRAMES.map((frame) => frame.duration);
+const frameStep = 100 / SITE_LOADER_FRAMES.length;
+---
+
+<div class="site-loader" data-site-loader role="status" aria-live="polite">
+  <div class="site-loader__avatar" data-site-loader-avatar aria-hidden="true">
+    <div class="site-loader__viewport">
+      <img
+        class="site-loader__poster"
+        src="/images/loading/muzi-expression-poster.webp"
+        width="384"
+        height="384"
+        alt=""
+        loading="eager"
+        decoding="async"
+        fetchpriority="high"
+      />
+      <img
+        class="site-loader__strip"
+        data-site-loader-strip
+        data-src="/images/loading/muzi-expression-strip.webp"
+        width="3072"
+        height="384"
+        alt=""
+        decoding="async"
+        draggable="false"
+      />
+    </div>
+  </div>
+  <span class="sr-only">Muzi 正在载入网站</span>
+</div>
+
+<script
+  is:inline
+  define:vars={{
+    frameDurations,
+    frameStep,
+    maxWaitMs: SITE_LOADER_MAX_WAIT_MS,
+    exitMs: SITE_LOADER_EXIT_MS,
+    sessionKey: SITE_LOADER_SESSION_KEY,
+  }}
+>
+  (() => {
+    const root = document.documentElement;
+    const loader = document.querySelector('[data-site-loader]');
+    if (!(loader instanceof HTMLElement)) return;
+
+    if (!root.hasAttribute('data-site-loader-active')) {
+      loader.remove();
+      return;
+    }
+
+    const avatar = loader.querySelector('[data-site-loader-avatar]');
+    const strip = loader.querySelector('[data-site-loader-strip]');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const saveData = Boolean(navigator.connection?.saveData);
+    const staticMode = reducedMotion || saveData;
+    const isStoryPage = document.body.classList.contains('body--story');
+
+    let frameIndex = 0;
+    let frameTimer = 0;
+    let maxTimer = 0;
+    let exitTimer = 0;
+    let pageReady = false;
+    let completedCycle = staticMode;
+    let spriteReady = false;
+    let exiting = false;
+
+    root.setAttribute('aria-busy', 'true');
+
+    const clearFrameTimer = () => {
+      window.clearTimeout(frameTimer);
+      frameTimer = 0;
+    };
+
+    const cleanup = () => {
+      clearFrameTimer();
+      window.clearTimeout(maxTimer);
+      window.clearTimeout(exitTimer);
+      window.removeEventListener('muzi:critical-ready', markPageReady);
+      window.removeEventListener('load', markPageReady);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+
+    const finish = () => {
+      if (exiting) return;
+      exiting = true;
+      clearFrameTimer();
+      window.clearTimeout(maxTimer);
+      root.setAttribute('data-site-loader-exiting', '');
+
+      try {
+        window.sessionStorage.setItem(sessionKey, '1');
+      } catch {
+        // Storage may be unavailable in strict privacy modes; the timeout still prevents blocking.
+      }
+
+      const delay = reducedMotion ? 0 : exitMs;
+      exitTimer = window.setTimeout(() => {
+        cleanup();
+        loader.remove();
+        root.removeAttribute('data-site-loader-active');
+        root.removeAttribute('data-site-loader-exiting');
+        root.removeAttribute('aria-busy');
+      }, delay);
+    };
+
+    const maybeFinish = () => {
+      if (pageReady && completedCycle) finish();
+    };
+
+    function markPageReady() {
+      pageReady = true;
+      maybeFinish();
+    }
+
+    const setFrame = (nextIndex) => {
+      if (!(strip instanceof HTMLImageElement)) return;
+      frameIndex = nextIndex;
+      strip.style.transform = `translate3d(${-frameIndex * frameStep}%, 0, 0)`;
+
+      if (avatar instanceof HTMLElement && frameIndex !== 0) {
+        avatar.removeAttribute('data-pop');
+        void avatar.offsetWidth;
+        avatar.setAttribute('data-pop', '');
+      }
+    };
+
+    const scheduleNextFrame = () => {
+      if (!spriteReady || exiting || document.hidden) return;
+      clearFrameTimer();
+      frameTimer = window.setTimeout(() => {
+        const nextIndex = (frameIndex + 1) % frameDurations.length;
+        if (nextIndex === 0) completedCycle = true;
+        setFrame(nextIndex);
+        if (pageReady && completedCycle) finish();
+        else scheduleNextFrame();
+      }, frameDurations[frameIndex]);
+    };
+
+    function handleVisibilityChange() {
+      if (document.hidden) clearFrameTimer();
+      else if (spriteReady && !exiting) scheduleNextFrame();
+    }
+
+    window.addEventListener('muzi:critical-ready', markPageReady, { once: true });
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    if (!isStoryPage) {
+      if (document.readyState === 'complete') markPageReady();
+      else window.addEventListener('load', markPageReady, { once: true });
+    }
+
+    maxTimer = window.setTimeout(finish, maxWaitMs);
+
+    if (staticMode) {
+      maybeFinish();
+      return;
+    }
+
+    if (!(strip instanceof HTMLImageElement)) {
+      completedCycle = true;
+      maybeFinish();
+      return;
+    }
+
+    strip.src = strip.dataset.src || '';
+    strip.decode().then(() => {
+      if (exiting) return;
+      spriteReady = true;
+      loader.setAttribute('data-sprite-ready', '');
+      setFrame(0);
+      scheduleNextFrame();
+    }).catch(() => {
+      completedCycle = true;
+      maybeFinish();
+    });
+  })();
+</script>

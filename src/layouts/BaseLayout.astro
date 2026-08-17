@@ -1,10 +1,13 @@
 ---
 import '../styles/global.css';
+import '../styles/site-loader.css';
 import '../styles/works-showcase.css';
 import '../styles/skill-showcase.css';
 import '../styles/content-hubs.css';
+import SiteLoader from '../components/SiteLoader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import SiteHeader from '../components/SiteHeader.astro';
+import { SITE_LOADER_SESSION_KEY } from '../lib/siteLoader';
 
 interface Props {
   title?: string;
@@ -42,9 +45,19 @@ const pageTitle = title === 'Muzi' ? title : `${title} | Muzi`;
     {preloadDisplayFont && (
       <link rel="preload" href="/fonts/pfan-hutu-subset.woff2" as="font" type="font/woff2" crossorigin />
     )}
+    <script is:inline define:vars={{ loaderSessionKey: SITE_LOADER_SESSION_KEY }}>
+      try {
+        if (window.sessionStorage.getItem(loaderSessionKey) !== '1') {
+          document.documentElement.setAttribute('data-site-loader-active', '');
+        }
+      } catch {
+        document.documentElement.setAttribute('data-site-loader-active', '');
+      }
+    </script>
     <title>{pageTitle}</title>
   </head>
   <body id="top" class:list={{ 'body--book': chrome === 'book', 'body--story': chrome === 'story' }}>
+    <SiteLoader />
     {surface === 'project-archive' && (
       <Fragment set:html={`<!--
 MUZI_PROJECT_ARCHIVE
@@ -54,7 +67,7 @@ FORM: One poster, one sentence, and one truthful destination for every published
 -->`} />
     )}
     <a class="skip-link" href="#main-content">跳到主要内容</a>
-    {chrome === 'site' && <SiteHeader />}
+    {chrome !== 'book' && <SiteHeader />}
     <main id="main-content"><slot /></main>
     {chrome === 'site' && <SiteFooter />}
   </body>
