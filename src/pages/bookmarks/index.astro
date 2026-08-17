@@ -1,0 +1,38 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const bookmarks = (await getCollection('bookmarks', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((entry) => ({
+    ...entry,
+    domain: new URL(entry.data.url).hostname.replace(/^www\./, ''),
+  }));
+---
+
+<BaseLayout title="Bookmarks" description="Muzi 收藏的网站、工具与项目。">
+  <section class="hub-page page-shell" aria-labelledby="bookmarks-title">
+    <h1 id="bookmarks-title" class="sr-only">Bookmarks</h1>
+
+    {bookmarks.length > 0 ? (
+      <ul class="bookmark-grid">
+        {bookmarks.map((bookmark) => (
+          <li>
+            <a
+              class="bookmark-card"
+              href={bookmark.data.url}
+              target="_blank"
+              rel="noreferrer noopener"
+              aria-label={`${bookmark.data.title}：打开链接（在新标签页打开）`}
+            >
+              <span class="bookmark-card__domain">{bookmark.domain}</span>
+              <h2>{bookmark.data.title}</h2>
+              {bookmark.data.summary && <p>{bookmark.data.summary}</p>}
+              <span class="bookmark-card__action">打开链接 <span aria-hidden="true">↗</span></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : <p class="empty-state hub-empty">收藏链接正在整理中。</p>}
+  </section>
+</BaseLayout>

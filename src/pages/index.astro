@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ScrollytellingHome from '../components/scrollytelling/ScrollytellingHome';
+---
+
+<BaseLayout
+  chrome="story"
+  title="Muzi"
+  description="以木子形象为向导，浏览 Muzi 的作品、笔记与持续发生的创作。"
+  ogImage="/images/scrollytelling/main-poster.webp"
+>
+  <ScrollytellingHome client:load />
+</BaseLayout>

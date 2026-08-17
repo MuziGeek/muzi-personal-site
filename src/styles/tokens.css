@@ -1,0 +1,24 @@
+:root {
+  --paper-primary: #f6f1e7;
+  --paper-secondary: #efe7d8;
+  --paper-light: #faf7f0;
+  --ink-primary: #2b2926;
+  --ink-muted: #6f6a62;
+  --ink-subtle: #8b867e;
+  --accent-brown: #b89068;
+  --rule: color-mix(in srgb, var(--ink-primary) 18%, transparent);
+  --page-max: 78rem;
+  --gutter: clamp(1.25rem, 4vw, 4rem);
+  --display: "MuziDisplay", "STKaiti", "KaiTi", serif;
+  --body: "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-fast: 200ms;
+  --motion-base: 500ms;
+  --motion-slow: 900ms;
+  --motion-page: 1200ms;
+  --layer-page: 1;
+  --layer-paper: 2;
+  --layer-cat: 3;
+  --layer-cursor: 4;
+  --layer-overlay: 5;
+}

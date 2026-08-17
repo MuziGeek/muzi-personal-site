@@ -1,0 +1,46 @@
+<div class="site-index" data-site-index>
+  <button class="index-toggle" type="button" data-index-toggle aria-expanded="false" aria-controls="site-index-panel">Index</button>
+  <nav class="index-panel" id="site-index-panel" data-index-panel aria-label="页面目录" hidden>
+    <a href="/">Home</a>
+    <a href="/works/">Works</a>
+    <a href="/open-source/">Open Source</a>
+    <a href="/bookmarks/">Bookmarks</a>
+    <a href="/notes/">Notes</a>
+    <a href="/about/">About</a>
+  </nav>
+</div>
+
+<script>
+  const menu = document.querySelector('[data-site-index]');
+  const toggle = menu?.querySelector('[data-index-toggle]');
+  const panel = menu?.querySelector('[data-index-panel]');
+
+  if (menu instanceof HTMLElement && toggle instanceof HTMLButtonElement && panel instanceof HTMLElement) {
+    const close = (restoreFocus = false) => {
+      panel.hidden = true;
+      toggle.setAttribute('aria-expanded', 'false');
+      if (restoreFocus) toggle.focus();
+    };
+    const open = () => {
+      panel.hidden = false;
+      toggle.setAttribute('aria-expanded', 'true');
+    };
+    toggle.addEventListener('click', () => panel.hidden ? open() : close());
+    toggle.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        panel.hidden ? open() : close();
+      }
+    });
+    document.addEventListener('pointerdown', (event) => {
+      if (!menu.contains(event.target as Node)) close();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !panel.hidden) {
+        event.preventDefault();
+        close(true);
+      }
+    });
+    panel.addEventListener('click', () => close());
+  }
+</script>

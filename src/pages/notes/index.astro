@@ -1,0 +1,15 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ContentList from '../../components/ContentList.astro';
+
+const notes = (await getCollection('notes', ({ data }) => !data.draft))
+  .sort((a, b) => (b.data.publishedAt?.getTime() ?? 0) - (a.data.publishedAt?.getTime() ?? 0));
+---
+
+<BaseLayout title="Notes" description="Muzi 的日常、学习与思考笔记。">
+  <section class="listing-page page-shell" aria-labelledby="notes-title">
+    <h1 id="notes-title" class="sr-only">Notes</h1>
+    <ContentList entries={notes} basePath="/notes" emptyText="可公开的笔记正在整理中。" />
+  </section>
+</BaseLayout>

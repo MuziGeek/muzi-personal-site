@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AboutContacts from '../components/about/AboutContacts';
+import AboutShowcase from '../components/about/AboutShowcase';
+import '../styles/about-showcase.css';
+---
+
+<BaseLayout
+  title="认识 Muzi"
+  description="认识 Muzi：作品、方法与持续发生的记录。"
+  ogImage="/images/about/about-hero.webp"
+  preloadDisplayFont
+>
+  <div class="about-page">
+    <header class="about-hero" aria-labelledby="about-title">
+      <div class="about-hero__copy">
+        <p class="about-hero__label">认识 MUZI / ABOUT</p>
+        <h1 id="about-title">认识 Muzi</h1>
+        <p class="about-hero__summary">作品 · 方法 · 记录</p>
+      </div>
+      <figure class="about-hero__art">
+        <img
+          src="/images/about/about-hero.webp"
+          width="1024"
+          height="1024"
+          alt="木子与蓝眼小猫在打开的创作手册旁向访客打招呼。"
+          loading="eager"
+          decoding="async"
+        />
+      </figure>
+    </header>
+
+    <section class="about-chapters" aria-labelledby="about-chapters-title">
+      <div class="about-chapters__heading">
+        <span id="about-chapters-title">个人章节 / ABOUT MUZI</span>
+        <span aria-hidden="true">01 — 03</span>
+      </div>
+      <AboutShowcase client:load />
+    </section>
+
+    <section class="about-contacts" aria-labelledby="about-contacts-title">
+      <div class="about-contacts__heading">
+        <span id="about-contacts-title">联系 / ELSEWHERE</span>
+        <span aria-hidden="true">01 — 06</span>
+      </div>
+      <AboutContacts client:visible />
+    </section>
+  </div>
+</BaseLayout>

@@ -1,0 +1,13 @@
+<footer class="site-footer page-shell">
+  <p>先把空间搭起来，内容慢慢长出来。 Muzi</p>
+  <div class="site-footer__meta">
+    <span>© <span data-current-year></span> Muzi</span>
+    <a href="/#top">回到顶部</a>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('[data-current-year]').forEach((element) => {
+    element.textContent = String(new Date().getFullYear());
+  });
+</script>

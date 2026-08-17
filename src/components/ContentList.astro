@@ -1,0 +1,35 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entries: CollectionEntry<'notes'>[];
+  basePath: '/notes';
+  emptyText: string;
+}
+
+const { entries, basePath, emptyText } = Astro.props;
+const dateFormatter = new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+---
+
+{entries.length > 0 ? (
+  <ul class="content-list">
+    {entries.map((entry) => (
+      <li>
+        <a href={`${basePath}/${entry.id}/`}>
+          <div>
+            <h3>{entry.data.title}</h3>
+            <p>{entry.data.summary}</p>
+          </div>
+          <div class="content-list__meta">
+            {entry.data.publishedAt && <time datetime={entry.data.publishedAt.toISOString()}>{dateFormatter.format(entry.data.publishedAt)}</time>}
+            {entry.data.tags.length > 0 && (
+              <span class="content-list__tags" aria-label="标签">
+                {entry.data.tags.map((tag) => <span class="note-tag">{tag}</span>)}
+              </span>
+            )}
+          </div>
+        </a>
+      </li>
+    ))}
+  </ul>
+) : <p class="empty-state">{emptyText}</p>}

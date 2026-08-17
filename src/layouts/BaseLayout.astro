@@ -1,0 +1,61 @@
+---
+import '../styles/global.css';
+import '../styles/works-showcase.css';
+import '../styles/skill-showcase.css';
+import '../styles/content-hubs.css';
+import SiteFooter from '../components/SiteFooter.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  chrome?: 'site' | 'book' | 'story';
+  ogImage?: string;
+  surface?: 'project-archive';
+  preloadDisplayFont?: boolean;
+}
+
+const {
+  title = 'Muzi',
+  description = '一个存放作品、笔记与思考的个人空间。',
+  chrome = 'site',
+  ogImage = '/images/creative-book/og-creative-book.svg',
+  surface,
+  preloadDisplayFont = false,
+} = Astro.props;
+const pageTitle = title === 'Muzi' ? title : `${title} | Muzi`;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#F6F1E7" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    {preloadDisplayFont && (
+      <link rel="preload" href="/fonts/pfan-hutu-subset.woff2" as="font" type="font/woff2" crossorigin />
+    )}
+    <title>{pageTitle}</title>
+  </head>
+  <body id="top" class:list={{ 'body--book': chrome === 'book', 'body--story': chrome === 'story' }}>
+    {surface === 'project-archive' && (
+      <Fragment set:html={`<!--
+MUZI_PROJECT_ARCHIVE
+THESIS: A warm project archive where real products and public source work remain clearly separated.
+OWN-WORLD: Paper surfaces, hand-drawn display type, quiet rules, and restrained living project posters.
+FORM: One poster, one sentence, and one truthful destination for every published entry.
+-->`} />
+    )}
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    {chrome === 'site' && <SiteHeader />}
+    <main id="main-content"><slot /></main>
+    {chrome === 'site' && <SiteFooter />}
+  </body>
+</html>

@@ -1,0 +1,103 @@
+.hub-page {
+  min-height: calc(100dvh - 13rem);
+  padding-block: clamp(2rem, 5vw, 4rem) clamp(6rem, 11vw, 10rem);
+}
+
+.bookmark-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(1rem, 2vw, 1.5rem);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.bookmark-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 15rem;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  color: inherit;
+  text-decoration: none;
+  background: var(--paper-light);
+  border: 1px solid var(--rule);
+  border-radius: 1rem;
+  transition: transform 260ms var(--ease), box-shadow 420ms var(--ease), border-color 260ms var(--ease);
+}
+
+.bookmark-card__domain {
+  margin-bottom: clamp(2.25rem, 5vw, 4rem);
+  color: var(--muted);
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+
+.bookmark-card h2 {
+  margin-bottom: 0.7rem;
+  font-family: var(--display);
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  line-height: 1.08;
+}
+
+.bookmark-card p {
+  max-width: 30rem;
+  margin-bottom: 1.8rem;
+  color: var(--muted);
+}
+
+.bookmark-card__action {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  align-self: flex-start;
+  margin-top: auto;
+  padding-block: 0.35rem;
+  font-weight: 700;
+  border-bottom: 1px solid currentColor;
+}
+
+.bookmark-card__action > span {
+  transition: transform 200ms var(--ease);
+}
+
+.bookmark-card:hover,
+.bookmark-card:focus-visible {
+  border-color: transparent;
+  box-shadow: 0 18px 42px rgba(43, 41, 38, 0.11);
+  transform: translateY(-4px);
+}
+
+.bookmark-card:hover .bookmark-card__action > span,
+.bookmark-card:focus-visible .bookmark-card__action > span {
+  transform: translate(2px, -2px);
+}
+
+.hub-empty {
+  max-width: 32rem;
+}
+
+@media (max-width: 47.99rem) {
+  .bookmark-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bookmark-card {
+    min-height: 13rem;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .bookmark-card:hover {
+    border-color: var(--rule);
+    box-shadow: none;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bookmark-card,
+  .bookmark-card__action > span {
+    transition: none;
+  }
+}

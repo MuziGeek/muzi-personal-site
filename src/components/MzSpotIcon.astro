@@ -1,0 +1,22 @@
+---
+import { getMzSpotIcon, type MzSpotIconKey } from '../lib/mz-icons';
+
+interface Props {
+  name: MzSpotIconKey;
+  class?: string;
+}
+
+const { name, class: className } = Astro.props;
+const icon = getMzSpotIcon(name);
+---
+
+<img
+  class:list={['mz-spot-icon', className]}
+  src={icon.src}
+  width={icon.width}
+  height={icon.height}
+  alt=""
+  aria-hidden="true"
+  loading="eager"
+  decoding="async"
+/>

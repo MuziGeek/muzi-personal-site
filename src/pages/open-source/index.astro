@@ -1,0 +1,59 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SkillShowcase from '../../components/skills/SkillShowcase';
+import WorksShowcase from '../../components/works/WorksShowcase';
+import { getGitHubStarCounts } from '../../lib/githubStars';
+
+const entries = (await getCollection('openSource', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order);
+const skillEntries = entries.filter(({ data }) => data.kind === 'skill');
+const starCounts = await getGitHubStarCounts(
+  skillEntries.map(({ data }) => data.repoUrl),
+  { token: import.meta.env.GITHUB_TOKEN },
+);
+const skills = skillEntries.map(({ id, data }) => ({
+  id,
+  title: data.title,
+  summary: data.summary,
+  repoUrl: data.repoUrl,
+  linkLabel: data.linkLabel,
+  posterKey: data.posterKey,
+  previewAlt: data.previewAlt,
+  starCount: starCounts[data.repoUrl] ?? null,
+}));
+const projects = entries.filter(({ data }) => data.kind === 'open-source').map(({ id, data }) => ({
+  id,
+  title: data.title,
+  summary: data.summary,
+  projectUrl: data.repoUrl,
+  linkLabel: data.linkLabel,
+  posterKey: data.posterKey,
+  previewAlt: data.previewAlt,
+}));
+---
+
+<BaseLayout
+  title="Open Source"
+  description="查看 Muzi 公开的 Skills、工具与开源实践。"
+  surface="project-archive"
+>
+  <section class="works-page" aria-labelledby="open-source-title">
+    <h1 id="open-source-title" class="sr-only">Open Source</h1>
+    <div class="works-archive page-shell">
+      {skills.length > 0 && (
+        <section aria-labelledby="skills-title">
+          <h2 id="skills-title" class="sr-only">Skills</h2>
+          <SkillShowcase skills={skills} client:visible />
+        </section>
+      )}
+      {projects.length > 0 && (
+        <section class="open-source-projects" aria-labelledby="open-projects-title">
+          <h2 id="open-projects-title" class="sr-only">Open Source Projects</h2>
+          <WorksShowcase projects={projects} client:visible />
+        </section>
+      )}
+      {skills.length === 0 && projects.length === 0 && <p class="empty-state">公开的开源项目正在整理中。</p>}
+    </div>
+  </section>
+</BaseLayout>

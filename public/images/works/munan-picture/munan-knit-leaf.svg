@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc" shape-rendering="geometricPrecision">
+  <title id="title">Munan hand-knitted leaf</title>
+  <desc id="desc">A warm olive-green leaf made from neat yarn stitches with an oatmeal vein and a wooden-brown stem.</desc>
+  <defs>
+    <path id="leafShape" d="M34 126C24 105 25 82 35 61C49 34 79 18 137 14C137 45 129 72 111 92C92 114 65 125 34 126Z" />
+    <path id="stitchV" d="M1 2C4 3 6 7 8 11C10 7 12 3 15 2" />
+    <clipPath id="leafClip">
+      <use href="#leafShape" />
+    </clipPath>
+    <pattern id="knitPattern" width="16" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(-17)">
+      <path d="M1 3C4 4 6 8 8 12C10 8 12 4 15 3" fill="none" stroke="#3f4a2e" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.46" />
+      <use href="#stitchV" fill="none" stroke="#aeb77b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+    </pattern>
+  </defs>
+
+  <g id="knittedLeaf">
+    <use href="#leafShape" fill="#687347" />
+    <g clip-path="url(#leafClip)">
+      <path d="M22 122C48 95 79 64 137 14V72C115 100 82 127 42 139Z" fill="#536039" opacity="0.72" />
+      <rect x="20" y="8" width="124" height="126" fill="url(#knitPattern)" opacity="0.9" />
+      <path d="M43 121C70 96 99 65 130 25" fill="none" stroke="#2f3825" stroke-width="12" stroke-linecap="round" opacity="0.48" />
+      <path id="leafVein" d="M43 120C70 95 99 64 130 25" fill="none" stroke="#e6d8ad" stroke-width="7" stroke-linecap="round" />
+      <path d="M48 115C73 91 100 62 126 30" fill="none" stroke="#fff2cd" stroke-width="2" stroke-linecap="round" opacity="0.82" />
+    </g>
+    <use href="#leafShape" fill="none" stroke="#35412f" stroke-width="5" stroke-linejoin="round" />
+    <path id="stem" d="M44 118C38 127 32 137 27 147" fill="none" stroke="#6b3f1f" stroke-width="12" stroke-linecap="round" />
+    <path d="M43 120C37 130 32 139 29 146" fill="none" stroke="#b88145" stroke-width="5" stroke-linecap="round" opacity="0.82" />
+    <path d="M43 120C38 130 34 139 31 145" fill="none" stroke="#e2b97d" stroke-width="1.8" stroke-linecap="round" opacity="0.72" />
+  </g>
+</svg>

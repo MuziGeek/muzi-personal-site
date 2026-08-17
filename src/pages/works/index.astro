@@ -1,0 +1,33 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WorksShowcase from '../../components/works/WorksShowcase';
+
+const works = (await getCollection('works', ({ data }) => (
+  !data.draft && Boolean(data.projectUrl && data.posterKey && data.previewAlt)
+))).sort((a, b) => a.data.order - b.data.order);
+const projects = works.map(({ id, data }) => ({
+  id,
+  title: data.title,
+  summary: data.summary,
+  projectUrl: data.projectUrl ?? '',
+  linkLabel: data.linkLabel ?? '访问项目',
+  posterKey: data.posterKey!,
+  previewAlt: data.previewAlt ?? '',
+}));
+---
+
+<BaseLayout
+  title="Works"
+  description="查看 Muzi 已经公开、可以直接访问和使用的真实产品。"
+  surface="project-archive"
+>
+  <section class="works-page" aria-labelledby="works-title">
+    <h1 id="works-title" class="sr-only">Works</h1>
+    <div id="selected-works" class="works-archive page-shell">
+      {projects.length > 0
+        ? <WorksShowcase projects={projects} variant="featured" client:visible />
+        : <p class="empty-state">可公开访问的产品正在整理中。</p>}
+    </div>
+  </section>
+</BaseLayout>
