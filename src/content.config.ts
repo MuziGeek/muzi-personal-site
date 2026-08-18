@@ -2,13 +2,6 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
-const sharedSchema = z.object({
-  title: z.string().min(1),
-  summary: z.string().min(1),
-  tags: z.array(z.string().min(1)).default([]),
-  draft: z.boolean().default(true),
-});
-
 const posterKeySchema = z.enum([
   'munan-gallery',
   'mz-icon-design',
@@ -71,9 +64,30 @@ const bookmarks = defineCollection({
 
 const notes = defineCollection({
   loader: glob({ base: './src/content/notes', pattern: '**/*.{md,mdx}' }),
-  schema: sharedSchema.extend({
+  schema: ({ image }) => z.object({
+    title: z.string().min(1),
+    summary: z.string().min(1).optional(),
+    tags: z.array(z.string().min(1)).default([]),
+    draft: z.boolean().default(true),
     publishedAt: z.coerce.date().optional(),
     updatedAt: z.coerce.date().optional(),
+    cover: image().optional(),
+    coverAlt: z.string().min(1).optional(),
+  }).superRefine((data, context) => {
+    if (data.draft) return;
+
+    if (!data.summary) {
+      context.addIssue({ code: 'custom', path: ['summary'], message: '公开笔记必须提供摘要。' });
+    }
+    if (!data.publishedAt) {
+      context.addIssue({ code: 'custom', path: ['publishedAt'], message: '公开笔记必须提供发布时间。' });
+    }
+    if (!data.cover) {
+      context.addIssue({ code: 'custom', path: ['cover'], message: '公开笔记必须提供封面。' });
+    }
+    if (!data.coverAlt) {
+      context.addIssue({ code: 'custom', path: ['coverAlt'], message: '公开笔记必须描述封面。' });
+    }
   }),
 });
 

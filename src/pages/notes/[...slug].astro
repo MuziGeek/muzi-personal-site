@@ -12,12 +12,12 @@ const { Content } = await render(entry);
 const dateFormatter = new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
 ---
 
-<BaseLayout title={entry.data.title} description={entry.data.summary}>
+<BaseLayout title={entry.data.title} description={entry.data.summary ?? entry.data.title}>
   <article class="article-page page-shell">
     <a class="text-link article-page__back" href="/notes/">返回笔记</a>
     <header>
       <h1>{entry.data.title}</h1>
-      <p>{entry.data.summary}</p>
+      {entry.data.summary && <p>{entry.data.summary}</p>}
       <div class="article-page__meta">
         {entry.data.publishedAt && <time datetime={entry.data.publishedAt.toISOString()}>{dateFormatter.format(entry.data.publishedAt)}</time>}
         {entry.data.tags.length > 0 && (

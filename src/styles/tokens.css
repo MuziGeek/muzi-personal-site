@@ -7,6 +7,7 @@
   --ink-subtle: #8b867e;
   --accent-brown: #b89068;
   --rule: color-mix(in srgb, var(--ink-primary) 18%, transparent);
+  --shadow-paper: rgb(43 41 38 / 0.32);
   --page-max: 78rem;
   --gutter: clamp(1.25rem, 4vw, 4rem);
   --display: "MuziDisplay", "STKaiti", "KaiTi", serif;

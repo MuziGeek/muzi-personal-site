@@ -26,6 +26,8 @@ pnpm-debug.log*
 # local review and design-tool output
 .codex-review/
 .impeccable/
+.hallmark/
+design-assets/
 design-qa.md
 
 # local script caches

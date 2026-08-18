@@ -1,0 +1,140 @@
+/* Hallmark · genre: editorial · macrostructure: Narrative Workflow · theme: Muzi warm paper · enrichment: generated evidence covers · nav: existing · footer: existing · contrast: pass (40–41) · slop: pass (42–45) · honest: pass (46) · chrome: pass (47) · tokens: pass (48) · responsive: pass (49) · icons: pass (30) · mobile: pass (34, 49, 50–57) */
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 */
+
+.notes-timeline {
+  position: relative;
+  display: grid;
+  gap: clamp(2.25rem, 8vw, 4.5rem);
+  width: min(100%, 70rem);
+  padding: 0 0 0 3.25rem;
+  margin: 0 auto;
+  list-style: none;
+}
+
+.notes-timeline::before {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 1.25rem;
+  width: 1px;
+  content: "";
+  background: var(--rule);
+}
+
+.notes-timeline__item {
+  position: relative;
+  display: grid;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.notes-timeline__item::before {
+  position: absolute;
+  inset-block-start: 0.45rem;
+  inset-inline-start: -2.35rem;
+  width: 0.65rem;
+  height: 0.65rem;
+  content: "";
+  border: 2px solid var(--paper);
+  border-radius: 50%;
+  background: var(--accent-brown);
+  box-shadow: 0 0 0 1px var(--rule);
+}
+
+.notes-timeline__date {
+  color: var(--ink-muted);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.045em;
+  line-height: 1.4;
+}
+
+.notes-timeline__cover {
+  display: block;
+  min-width: 0;
+  overflow: clip;
+  border: 1px solid var(--rule);
+  border-radius: 1rem;
+  background: var(--paper-secondary);
+  box-shadow: 0 0.5rem 1.5rem -1.35rem var(--shadow-paper);
+  text-decoration: none;
+  transform: translateY(0);
+  transition: border-color var(--motion-fast) var(--ease), transform var(--motion-fast) var(--ease);
+}
+
+.notes-timeline__cover img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  transform: scale(1);
+  transition: transform var(--motion-base) var(--ease);
+}
+
+.notes-timeline__cover:focus-visible {
+  border-color: var(--ink-primary);
+  outline-color: var(--ink-primary);
+}
+
+.notes-timeline__cover:active {
+  transform: translateY(0.0625rem);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .notes-timeline__cover:hover {
+    transform: translateY(-0.25rem);
+  }
+
+  .notes-timeline__cover:hover img {
+    transform: scale(1.022);
+  }
+}
+
+@media (min-width: 64rem) {
+  .notes-timeline {
+    gap: clamp(3.5rem, 7vw, 6rem);
+    padding-inline: 0;
+  }
+
+  .notes-timeline::before {
+    inset-inline-start: 50%;
+  }
+
+  .notes-timeline__item {
+    grid-template-columns: minmax(0, 1fr) 7rem minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .notes-timeline__item::before {
+    inset-block-start: 1.1rem;
+    inset-inline-start: calc(50% - 0.33rem);
+  }
+
+  .notes-timeline__date {
+    grid-column: 2;
+    grid-row: 1;
+    padding-block-start: 0.76rem;
+    text-align: center;
+  }
+
+  .notes-timeline__cover {
+    grid-row: 1;
+  }
+
+  .notes-timeline__item[data-side='left'] .notes-timeline__cover {
+    grid-column: 1;
+  }
+
+  .notes-timeline__item[data-side='right'] .notes-timeline__cover {
+    grid-column: 3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notes-timeline__cover,
+  .notes-timeline__cover img,
+  .notes-timeline__cover:hover,
+  .notes-timeline__cover:hover img {
+    transition: none;
+    transform: none;
+  }
+}
