@@ -4,6 +4,7 @@ import '../styles/site-loader.css';
 import '../styles/works-showcase.css';
 import '../styles/skill-showcase.css';
 import '../styles/content-hubs.css';
+import { ClientRouter } from 'astro:transitions';
 import SiteLoader from '../components/SiteLoader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import SiteHeader from '../components/SiteHeader.astro';
@@ -16,6 +17,7 @@ interface Props {
   ogImage?: string;
   surface?: 'project-archive';
   preloadDisplayFont?: boolean;
+  transitions?: boolean;
 }
 
 const {
@@ -25,6 +27,7 @@ const {
   ogImage = '/images/creative-book/og-creative-book.svg',
   surface,
   preloadDisplayFont = false,
+  transitions = false,
 } = Astro.props;
 const pageTitle = title === 'Muzi' ? title : `${title} | Muzi`;
 ---
@@ -55,6 +58,7 @@ const pageTitle = title === 'Muzi' ? title : `${title} | Muzi`;
       }
     </script>
     <title>{pageTitle}</title>
+    {transitions && <ClientRouter />}
   </head>
   <body id="top" class:list={{ 'body--book': chrome === 'book', 'body--story': chrome === 'story' }}>
     <SiteLoader />

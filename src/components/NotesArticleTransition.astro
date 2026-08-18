@@ -1,0 +1,81 @@
+<script>
+  const transitionName = 'article-cover';
+  const selectedNoteKey = 'muzi-notes-transition-id';
+  const cardSelector = '.notes-card[data-note-id]';
+  const coverSelector = '.notes-card__cover';
+
+  const getNoteId = (card: Element) => card.getAttribute('data-note-id');
+
+  const rememberNote = (noteId: string) => {
+    try {
+      window.sessionStorage.setItem(selectedNoteKey, noteId);
+    } catch {
+      // The forward transition still works when storage is unavailable.
+    }
+  };
+
+  const readRememberedNote = () => {
+    try {
+      return window.sessionStorage.getItem(selectedNoteKey);
+    } catch {
+      return null;
+    }
+  };
+
+  const markCardCover = (card: Element) => {
+    const noteId = getNoteId(card);
+    const cover = card.querySelector<HTMLElement>(coverSelector);
+    if (!noteId || !cover) return;
+
+    document.querySelectorAll<HTMLElement>(coverSelector).forEach((item) => {
+      item.style.removeProperty('view-transition-name');
+    });
+    cover.style.viewTransitionName = transitionName;
+    rememberNote(noteId);
+  };
+
+  const cardFromTarget = (target: EventTarget | null) =>
+    target instanceof Element ? target.closest(cardSelector) : null;
+
+  document.addEventListener('pointerdown', (event) => {
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    const card = cardFromTarget(event.target);
+    if (card) markCardCover(card);
+  }, { capture: true });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter') return;
+    const card = cardFromTarget(event.target);
+    if (card) markCardCover(card);
+  }, { capture: true });
+
+  document.addEventListener('click', (event) => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    const card = cardFromTarget(event.target);
+    if (card) markCardCover(card);
+  }, { capture: true });
+
+  document.addEventListener('astro:before-swap', (event) => {
+    const nextDocument = (event as Event & { newDocument?: Document }).newDocument;
+    const noteId = readRememberedNote();
+    if (!nextDocument || !noteId || !nextDocument.querySelector('.notes-grid')) return;
+
+    const targetCard = nextDocument.querySelector(`${cardSelector}[data-note-id="${CSS.escape(noteId)}"]`);
+    const targetCover = targetCard?.querySelector<HTMLElement>(coverSelector);
+    if (targetCover) targetCover.style.viewTransitionName = transitionName;
+  });
+
+  document.addEventListener('astro:page-load', () => {
+    const article = document.querySelector<HTMLElement>('.notes-article[data-note-id]');
+    const noteId = article?.dataset.noteId;
+    if (noteId) rememberNote(noteId);
+
+    if (document.querySelector('.notes-grid')) {
+      window.setTimeout(() => {
+        document.querySelectorAll<HTMLElement>(coverSelector).forEach((cover) => {
+          cover.style.removeProperty('view-transition-name');
+        });
+      }, 700);
+    }
+  });
+</script>

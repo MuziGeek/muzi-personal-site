@@ -1,0 +1,47 @@
+---
+interface Props {
+  markdown: string;
+}
+
+const { markdown } = Astro.props;
+const serializedMarkdown = JSON.stringify(markdown).replaceAll('<', '\\u003c');
+---
+
+<button class="notes-article__copy" type="button" data-markdown-copy data-status="idle">
+  <span aria-live="polite">复制为 Markdown</span>
+</button>
+<script is:inline type="application/json" data-note-markdown set:html={serializedMarkdown} />
+
+<script>
+  const copySelector = '[data-markdown-copy]';
+  const sourceSelector = '[data-note-markdown]';
+
+  const writeToClipboard = async (value: string) => {
+    if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+    await navigator.clipboard.writeText(value);
+  };
+
+  document.addEventListener('click', async (event) => {
+    const target = event.target instanceof Element ? event.target.closest(copySelector) : null;
+    if (!(target instanceof HTMLButtonElement)) return;
+
+    const source = document.querySelector<HTMLScriptElement>(sourceSelector);
+    const label = target.querySelector<HTMLElement>('[aria-live]');
+    if (!source || !label) return;
+
+    try {
+      const markdown = JSON.parse(source.textContent ?? '""');
+      await writeToClipboard(markdown);
+      target.dataset.status = 'copied';
+      label.textContent = '已复制 Markdown';
+      window.setTimeout(() => {
+        if (!target.isConnected) return;
+        target.dataset.status = 'idle';
+        label.textContent = '复制为 Markdown';
+      }, 2000);
+    } catch {
+      target.dataset.status = 'error';
+      label.textContent = '复制失败，请重试';
+    }
+  });
+</script>

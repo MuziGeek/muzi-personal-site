@@ -1,18 +1,19 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import NotesTimeline from '../../components/NotesTimeline.astro';
-import '../../styles/notes-timeline.css';
+import NotesGrid from '../../components/NotesGrid.astro';
+import '../../styles/notes-grid.css';
+import '../../styles/notes-article-transition.css';
 
 const notes = (await getCollection('notes', ({ data }) => !data.draft))
   .sort((a, b) => (b.data.publishedAt?.getTime() ?? 0) - (a.data.publishedAt?.getTime() ?? 0));
 ---
 
-<BaseLayout title="Notes" description="Muzi 的日常、学习与思考笔记。">
+<BaseLayout title="Notes" description="Muzi 的日常、学习与思考笔记。" transitions>
   <section class="listing-page page-shell" aria-labelledby="notes-title">
     <h1 id="notes-title" class="sr-only">Notes</h1>
     {notes.length > 0
-      ? <NotesTimeline entries={notes} />
+      ? <NotesGrid entries={notes} />
       : <p class="empty-state">可公开的笔记正在整理中。</p>}
   </section>
 </BaseLayout>
