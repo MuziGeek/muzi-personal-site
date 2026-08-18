@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   getChapterIndex,
+  getStoryScrollProgress,
   getStoryLayer,
   MAIN_END_HOLD_PROGRESS,
   MAIN_VIDEO_DURATION,
@@ -10,6 +11,24 @@ import {
 } from './story';
 
 describe('scrollytelling timeline', () => {
+  it('maps the story scroll range to normalized progress', () => {
+    const metrics = { storyTop: 100, storyHeight: 7_000, viewportHeight: 1_000 };
+
+    expect(getStoryScrollProgress({ ...metrics, scrollY: 100 })).toBe(0);
+    expect(getStoryScrollProgress({ ...metrics, scrollY: 3_100 })).toBe(0.5);
+    expect(getStoryScrollProgress({ ...metrics, scrollY: 6_100 })).toBe(1);
+  });
+
+  it('clamps restored scroll positions and responds to viewport changes', () => {
+    const metrics = { storyTop: 200, storyHeight: 7_000 };
+
+    expect(getStoryScrollProgress({ ...metrics, viewportHeight: 1_000, scrollY: -400 })).toBe(0);
+    expect(getStoryScrollProgress({ ...metrics, viewportHeight: 1_000, scrollY: 9_000 })).toBe(1);
+    expect(getStoryScrollProgress({ ...metrics, viewportHeight: 1_000, scrollY: 3_200 })).toBe(0.5);
+    expect(getStoryScrollProgress({ ...metrics, viewportHeight: 500, scrollY: 3_200 })).toBeCloseTo(3_000 / 6_500);
+    expect(getStoryScrollProgress({ storyTop: 0, storyHeight: 800, viewportHeight: 800, scrollY: 200 })).toBe(0);
+  });
+
   it('reaches the final main-video frame before the outro transition', () => {
     expect(progressToTime(0)).toBe(0);
     expect(progressToTime(MAIN_END_HOLD_PROGRESS)).toBe(MAIN_VIDEO_DURATION);
@@ -39,12 +58,17 @@ describe('scrollytelling timeline', () => {
     expect(
       STORY_CHAPTERS.filter((chapter) => chapter.iconKey).map(({ id, iconKey }) => ({ id, iconKey })),
     ).toEqual([
+      { id: 'home', iconKey: 'about' },
       { id: 'works', iconKey: 'works' },
       { id: 'projects', iconKey: 'openSource' },
       { id: 'observe', iconKey: 'bookmarks' },
       { id: 'notes', iconKey: 'notes' },
-      { id: 'end', iconKey: 'about' },
     ]);
+  });
+
+  it('introduces the About page in the first chapter instead of the closing chapter', () => {
+    expect(STORY_CHAPTERS[0]).toMatchObject({ href: '/about/', linkLabel: '认识 Muzi' });
+    expect(STORY_CHAPTERS.at(-1)).not.toHaveProperty('href');
   });
 
   it('connects the four content chapters to their public pages', () => {

@@ -51,6 +51,24 @@ typography:
     fontSize: "16px"
     fontWeight: 400
     lineHeight: 1.7
+  article-title:
+    fontFamily: '"Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif'
+    fontSize: "clamp(2.5rem, 5vw, 4.25rem)"
+    fontWeight: 700
+    lineHeight: 1.15
+    letterSpacing: "-0.03em"
+  article-section:
+    fontFamily: '"Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif'
+    fontSize: "clamp(1.55rem, 3vw, 2.2rem)"
+    fontWeight: 700
+    lineHeight: 1.35
+    letterSpacing: "-0.02em"
+  article-subsection:
+    fontFamily: '"Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif'
+    fontSize: "1.55rem"
+    fontWeight: 700
+    lineHeight: 1.35
+    letterSpacing: "-0.02em"
   body-intro:
     fontFamily: '"Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif'
     fontSize: "clamp(1rem, 1.35vw, 1.12rem)"
@@ -178,12 +196,15 @@ Works 只呈现可以直接访问的真实产品；Open Source 把公开 Skills 
 
 ### Hierarchy
 
-- **Site Display**（400，`display-site`，1.08）：首页、列表页、About 与文章页的主标题。
+- **Site Display**（400，`display-site`，1.08）：首页、列表页与 About 的主标题。
 - **Works Display**（400，`display-works`，0.98）：Works 首屏标题；窄屏使用 `clamp(3.65rem, 16vw, 5.8rem)` 保持视觉重量。
 - **Section Headline**（400，`headline-section`，1.1）：全站章节标题。
 - **Project Headline**（400，`headline-project`，1.04）：项目卡标题；47.99rem 及以下使用 `clamp(2.35rem, 11vw, 3.4rem)`。
 - **List Title**（400，`title-list`，1.2）：Works 之外的内容列表标题。
 - **Body**（400，`body`，1.7）：全站基础正文与导航。
+- **Article Title**（700，`article-title`，1.15）：文章主标题，使用正文无衬线字体而非展示字体。
+- **Article Section**（700，`article-section`，1.35）：文章二级标题，沿用无衬线阅读体系。
+- **Article Subsection**（700，`article-subsection`，1.35）：文章三级标题，沿用无衬线阅读体系。
 - **Intro Body**（400，`body-intro`，1.9）：Works 开场承诺，保持更舒展的行距。
 - **Project Body**（400，`body-project`，1.8）：每张卡唯一的一句话摘要，最大宽度 22rem。
 - **Spaced Label**（400，`label-spaced`，0.08em）：翻阅提示等稀疏引导。
@@ -220,11 +241,12 @@ Works 只呈现可以直接访问的真实产品；Open Source 把公开 Skills 
 
 ### Site Navigation
 
-- **Style:** 4.5rem 高的暖纸顶栏，以 1px 底线连接 Muzi wordmark 与 Index 触发器；首页复用同一顶栏并以透明覆盖层悬浮在滚动叙事上方，分隔线仍由叙事舞台绘制在人物层下方。
+- **Style:** 4.5rem 高的暖纸顶栏，以 1px 底线连接 Muzi wordmark 与 Index 触发器；首页复用同一顶栏并以透明覆盖层悬浮在滚动叙事上方，不绘制会穿过人物形象的顶部分隔线。
 - **Index Trigger:** `Index` 使用 700 字重并与自绘加号组成至少 44px 高的触发器；hover、focus 与展开状态共享从左向右延伸的暖棕底线，展开时加号旋转为关闭符号。首页顶部不再单独显示 Works、Notes、About 链接。
 - **Paper Directory:** 目录面板宽约 `18–21rem`，使用浅纸面、1px 规则线、1rem 圆角与克制双层阴影；六个页面以 `01–06 / 页面名 / 方向箭头` 排列，当前页面使用 `aria-current="page"` 与常驻黄色标题标记。
 - **Motion:** 面板在约 260ms 内由轻微上移和缩小恢复，目录行以约 35ms 间隔进入；hover/focus 时标题黄色标记延伸、箭头右移。粗指针关闭横向位移，`prefers-reduced-motion` 直接呈现最终状态。
 - **Behavior:** 使用原生按钮 disclosure；支持 Enter、Space、Escape、外部点击与关闭后焦点恢复。面板不使用全屏遮罩、玻璃模糊、GSAP 或方向性 3D。
+- **Homepage Return:** 首页使用原生滚动进度同步章节与媒体状态；普通站内返回从顶部开始，浏览器后退保留原章节。章节反馈不等待主视频就绪，页面从 BFCache 恢复或重新可见时重新同步并恢复循环媒体。
 
 ### Works Intro Cue
 
@@ -264,10 +286,10 @@ Works 只呈现可以直接访问的真实产品；Open Source 把公开 Skills 
 ### About Chapter Card
 
 - **Structure:** `/about/` 使用一张页首木子与小猫插画和三张个人章节按钮卡；章节固定为“我是谁”“正在做”“工作方式”，点击打开详情弹窗，不虚构履历或个人信息。
-- **Desktop:** 卡片约 `756 × 260px`、20px 圆角、`28px 34px` 内边距。文字层位于左侧并保持 `z-index: 4`，透明插画位于右侧并可占据约 58% 卡宽，浅色编号位于底层。
+- **Desktop:** 卡片约 `696 × 232px`、20px 圆角、`24px 28px` 内边距。文字层位于左侧并保持 `z-index: 4`，透明插画位于右侧并可占据约 58% 卡宽，浅色编号位于底层。
 - **Scroll Roll:** 复用项目卡的 `900px` 透视与 `-14° → 0° → +14°` 滚动 roll。悬停只让卡面上移 5px，插画右移 8px并放大 1.035，标题黄色标记延伸到文字宽度。
 - **Dialog:** 弹窗具备固定模糊遮罩、独立滚动正文和固定操作栏；支持 Enter、Space、Escape、焦点圈定、背景 inert、滚动锁定与关闭后焦点恢复。
-- **Mobile / Reduced Motion:** 移动端使用约 350 × 400px 纵向卡并关闭 roll；粗指针与 reduced-motion 关闭抬升、放大和滚动动画，卡片与弹窗仍保持完整语义和操作能力。
+- **Mobile / Reduced Motion:** 移动端使用约 350 × 344px 纵向卡并关闭 roll；粗指针与 reduced-motion 关闭抬升、放大和滚动动画，卡片与弹窗仍保持完整语义和操作能力。
 
 ### About Contact Row
 

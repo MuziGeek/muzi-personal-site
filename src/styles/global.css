@@ -49,7 +49,8 @@ h1, h2, h3, p { margin-top: 0; }
 .hero { display: grid; gap: clamp(2.5rem, 7vw, 7rem); align-items: end; min-height: min(48rem, calc(100dvh - 4.5rem)); padding-block: clamp(3.5rem, 8vw, 6rem) clamp(3.5rem, 8vw, 6.5rem); }
 .hero__copy { max-width: 38rem; animation: rise-in 480ms var(--ease) both; }
 .hero__kicker, .page-label { margin-bottom: 1rem; color: var(--muted); font-size: 0.82rem; letter-spacing: 0.08em; }
-.hero h1, .listing-page h1, .about-page h1, .article-page h1, .not-found h1 { margin-bottom: 1.25rem; font-family: var(--display); font-size: clamp(3rem, 7vw, 6.1rem); font-weight: 400; line-height: 1.08; letter-spacing: -0.04em; }
+.hero h1, .listing-page h1, .about-page h1, .not-found h1 { margin-bottom: 1.25rem; font-family: var(--display); font-size: clamp(3rem, 7vw, 6.1rem); font-weight: 400; line-height: 1.08; letter-spacing: -0.04em; }
+.article-page h1 { margin-bottom: 1.25rem; font-family: var(--body); font-size: clamp(2.5rem, 5vw, 4.25rem); font-weight: 700; line-height: 1.15; letter-spacing: -0.03em; }
 .hero h1, .listing-page h1, .about-page h1, .article-page h1, .not-found h1 { min-width: 0; overflow-wrap: anywhere; }
 .hero__summary { max-width: 22rem; margin-bottom: 1.7rem; color: var(--muted); font-size: clamp(1rem, 1.5vw, 1.15rem); }
 .hero__media { justify-self: center; align-self: end; margin: 0; animation: rise-in 560ms var(--ease) 60ms both; }
@@ -89,9 +90,9 @@ h1, h2, h3, p { margin-top: 0; }
 .article-page header > p { color: var(--muted); font-size: 1.1rem; }
 .article-page__meta { display: flex; flex-wrap: wrap; gap: 0.7rem 1rem; align-items: center; color: var(--muted); font-size: 0.9rem; }
 .prose { max-width: 42rem; padding-top: 2.5rem; }
-.prose h2, .prose h3 { font-family: var(--display); font-weight: 400; line-height: 1.2; }
-.prose h2 { margin-top: 3rem; font-size: 2.25rem; }
-.prose h3 { margin-top: 2rem; font-size: 1.65rem; }
+.prose h2, .prose h3 { font-family: var(--body); font-weight: 700; line-height: 1.35; letter-spacing: -0.02em; }
+.prose h2 { margin-top: 3rem; font-size: clamp(1.55rem, 3vw, 2.2rem); }
+.prose h3 { margin-top: 2rem; font-size: 1.55rem; }
 .prose h2, .prose h3, .prose h4 { min-width: 0; overflow-wrap: anywhere; }
 .prose p, .prose li { color: var(--muted); }
 .prose a { color: var(--rust); }

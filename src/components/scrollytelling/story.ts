@@ -29,6 +29,9 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     startTime: 0,
     endTime: 1.5,
     alignment: 'left',
+    iconKey: 'about',
+    href: '/about/',
+    linkLabel: '认识 Muzi',
   },
   {
     id: 'hello',
@@ -89,14 +92,30 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     startTime: 15.5,
     endTime: MAIN_VIDEO_DURATION,
     alignment: 'left',
-    iconKey: 'about',
-    href: '/about/',
-    linkLabel: '认识 Muzi',
   },
 ];
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
+
+export function getStoryScrollProgress({
+  scrollY,
+  storyTop,
+  storyHeight,
+  viewportHeight,
+}: {
+  scrollY: number;
+  storyTop: number;
+  storyHeight: number;
+  viewportHeight: number;
+}) {
+  if (![scrollY, storyTop, storyHeight, viewportHeight].every(Number.isFinite)) return 0;
+
+  const scrollableDistance = Math.max(0, storyHeight - viewportHeight);
+  if (scrollableDistance === 0) return 0;
+
+  return clamp((scrollY - storyTop) / scrollableDistance, 0, 1);
+}
 
 export function progressToTime(progress: number, duration = MAIN_VIDEO_DURATION) {
   const normalizedProgress = clamp(progress, 0, MAIN_END_HOLD_PROGRESS) / MAIN_END_HOLD_PROGRESS;

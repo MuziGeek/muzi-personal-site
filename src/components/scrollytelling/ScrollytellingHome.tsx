@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { getMzSpotIcon } from '../../lib/mz-icons';
 import {
   getChapterIndex,
+  getStoryScrollProgress,
   getStoryLayer,
   MAIN_VIDEO_DURATION,
   progressToTime,
@@ -115,15 +116,15 @@ export default function ScrollytellingHome() {
           ? outroRef.current
           : null;
 
+    const playVideo = () => {
+      if (cancelled || document.hidden || !activeVideo) return;
+      void activeVideo.play().catch(() => {
+        // The poster and accessible copy remain available if playback is denied.
+      });
+    };
+
     if (activeVideo) {
       waitingVideo = activeVideo;
-      const playVideo = () => {
-        if (cancelled) return;
-        void activeVideo.play().catch(() => {
-          // The poster and accessible copy remain available if playback is denied.
-        });
-      };
-
       const preparePlayback = () => {
         if (cancelled) return;
 
@@ -143,6 +144,17 @@ export default function ScrollytellingHome() {
       else activeVideo.addEventListener('loadeddata', readinessListener, { once: true });
     }
 
+    const handlePageHide = () => pauseAll();
+    const handlePageShow = () => playVideo();
+    const handleVisibilityChange = () => {
+      if (document.hidden) pauseAll();
+      else playVideo();
+    };
+
+    window.addEventListener('pagehide', handlePageHide);
+    window.addEventListener('pageshow', handlePageShow);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
       cancelled = true;
       if (waitingVideo && readinessListener) {
@@ -150,107 +162,200 @@ export default function ScrollytellingHome() {
       }
       if (waitingVideo && seekListener) waitingVideo.removeEventListener('seeked', seekListener);
       window.clearTimeout(reprimeTimer);
+      window.removeEventListener('pagehide', handlePageHide);
+      window.removeEventListener('pageshow', handlePageShow);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [activeLayer, staticMode]);
 
   useEffect(() => {
     if (staticMode || !rootRef.current || !mainRef.current) return;
 
+    const root = rootRef.current;
+    const mainVideo = mainRef.current;
     let cancelled = false;
-    let removeScrollTrigger: (() => void) | undefined;
-    let frameId = 0;
-    let targetTime = 0;
-    let smoothedTime = mainRef.current.currentTime || 0;
+    let videoFrameId = 0;
+    let scrollFrameId = 0;
+    let settleFrameId = 0;
+    let settleConfirmFrameId = 0;
+    let targetTime = mainVideo.currentTime || 0;
+    let smoothedTime = targetTime;
     let previousFrameTime = performance.now();
     let previousSeekTime = 0;
     let chapterIndex = 0;
     let layer: StoryLayer = 'intro';
     let outroPreloaded = false;
     let removeOutroPrime: (() => void) | undefined;
+    let snapOnNextSync = false;
+
+    const canSeekMainVideo = () => mainVideo.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA;
+
+    const getMainDuration = () =>
+      mainVideo.duration && Number.isFinite(mainVideo.duration)
+        ? mainVideo.duration
+        : MAIN_VIDEO_DURATION;
+
+    const getScrollProgress = () => {
+      const storyTop = window.scrollY + root.getBoundingClientRect().top;
+      return getStoryScrollProgress({
+        scrollY: window.scrollY,
+        storyTop,
+        storyHeight: root.offsetHeight,
+        viewportHeight: window.innerHeight,
+      });
+    };
+
+    const snapMainVideo = () => {
+      if (!canSeekMainVideo()) return;
+      smoothedTime = targetTime;
+      if (Math.abs(mainVideo.currentTime - targetTime) > 0.012) {
+        mainVideo.currentTime = targetTime;
+        previousSeekTime = performance.now();
+      }
+    };
+
+    const preloadOutro = () => {
+      if (outroPreloaded) return;
+      outroPreloaded = true;
+      const outroVideo = outroRef.current;
+      if (!outroVideo) return;
+
+      const primeFirstFrame = () => {
+        outroVideo.pause();
+        outroVideo.currentTime = 0.001;
+      };
+
+      outroVideo.preload = 'auto';
+      if (outroVideo.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) primeFirstFrame();
+      else {
+        outroVideo.addEventListener('loadeddata', primeFirstFrame, { once: true });
+        removeOutroPrime = () => outroVideo.removeEventListener('loadeddata', primeFirstFrame);
+        outroVideo.load();
+      }
+    };
+
+    const syncFromScroll = (snapMedia = false) => {
+      const progress = getScrollProgress();
+      const duration = getMainDuration();
+      targetTime = progressToTime(progress, duration);
+
+      const nextChapter = getChapterIndex(targetTime);
+      if (nextChapter !== chapterIndex) {
+        chapterIndex = nextChapter;
+        setActiveChapter(nextChapter);
+      }
+
+      const nextLayer = getStoryLayer(progress);
+      if (nextLayer === 'outro') targetTime = Math.max(0, duration - 0.001);
+      if (nextLayer !== layer) {
+        layer = nextLayer;
+        setActiveLayer(nextLayer);
+      }
+
+      if (progress >= 0.8) preloadOutro();
+      if (snapMedia) snapMainVideo();
+    };
+
+    const scheduleScrollSync = (snapMedia = false) => {
+      snapOnNextSync ||= snapMedia;
+      if (scrollFrameId) return;
+      scrollFrameId = window.requestAnimationFrame(() => {
+        scrollFrameId = 0;
+        const shouldSnap = snapOnNextSync;
+        snapOnNextSync = false;
+        syncFromScroll(shouldSnap);
+      });
+    };
+
+    const scheduleSettledSync = () => {
+      window.cancelAnimationFrame(settleFrameId);
+      window.cancelAnimationFrame(settleConfirmFrameId);
+      settleFrameId = window.requestAnimationFrame(() => {
+        settleFrameId = 0;
+        settleConfirmFrameId = window.requestAnimationFrame(() => {
+          settleConfirmFrameId = 0;
+          scheduleScrollSync(true);
+        });
+      });
+    };
 
     const updateVideoTime = (now: number) => {
-      const video = mainRef.current;
+      videoFrameId = 0;
+      if (cancelled || document.hidden) return;
       const elapsed = Math.min(now - previousFrameTime, 64);
       previousFrameTime = now;
       const blend = 1 - Math.exp(-elapsed * 0.018);
       smoothedTime += (targetTime - smoothedTime) * blend;
 
-      if (video && now - previousSeekTime >= 33 && Math.abs(video.currentTime - smoothedTime) > 0.012) {
-        video.currentTime = smoothedTime;
+      if (
+        canSeekMainVideo() &&
+        !mainVideo.seeking &&
+        now - previousSeekTime >= 33 &&
+        Math.abs(mainVideo.currentTime - smoothedTime) > 0.012
+      ) {
+        mainVideo.currentTime = smoothedTime;
         previousSeekTime = now;
       }
 
-      frameId = window.requestAnimationFrame(updateVideoTime);
+      videoFrameId = window.requestAnimationFrame(updateVideoTime);
     };
 
-    frameId = window.requestAnimationFrame(updateVideoTime);
+    const startVideoLoop = () => {
+      if (cancelled || document.hidden || videoFrameId) return;
+      previousFrameTime = performance.now();
+      videoFrameId = window.requestAnimationFrame(updateVideoTime);
+    };
 
-    void (async () => {
-      const [{ gsap }, { ScrollTrigger }] = await Promise.all([
-        import('gsap'),
-        import('gsap/ScrollTrigger'),
-      ]);
+    const stopVideoLoop = () => {
+      window.cancelAnimationFrame(videoFrameId);
+      videoFrameId = 0;
+    };
 
-      if (cancelled || !rootRef.current) return;
+    const handleScroll = () => scheduleScrollSync();
+    const handleResize = () => {
+      scheduleScrollSync(true);
+      scheduleSettledSync();
+    };
+    const handlePageHide = () => stopVideoLoop();
+    const handlePageShow = () => {
+      scheduleScrollSync(true);
+      scheduleSettledSync();
+      startVideoLoop();
+    };
+    const handleVisibilityChange = () => {
+      if (document.hidden) stopVideoLoop();
+      else {
+        scheduleScrollSync(true);
+        scheduleSettledSync();
+        startVideoLoop();
+      }
+    };
+    const handleMainLoadedData = () => syncFromScroll(true);
 
-      gsap.registerPlugin(ScrollTrigger);
-      const trigger = ScrollTrigger.create({
-        trigger: rootRef.current,
-        start: 'top top',
-        end: 'bottom bottom',
-        onUpdate: (self) => {
-          const duration =
-            mainRef.current?.duration && Number.isFinite(mainRef.current.duration)
-              ? mainRef.current.duration
-              : MAIN_VIDEO_DURATION;
-          targetTime = progressToTime(self.progress, duration);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('pagehide', handlePageHide);
+    window.addEventListener('pageshow', handlePageShow);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    mainVideo.addEventListener('loadeddata', handleMainLoadedData);
 
-          const nextChapter = getChapterIndex(targetTime);
-          if (nextChapter !== chapterIndex) {
-            chapterIndex = nextChapter;
-            setActiveChapter(nextChapter);
-          }
-
-          const nextLayer = getStoryLayer(self.progress);
-          if (nextLayer !== layer) {
-            if (nextLayer === 'outro' || layer === 'outro') {
-              const finalFrameTime = Math.max(0, duration - 0.001);
-              targetTime = finalFrameTime;
-              smoothedTime = finalFrameTime;
-              if (mainRef.current) mainRef.current.currentTime = finalFrameTime;
-            }
-
-            layer = nextLayer;
-            setActiveLayer(nextLayer);
-          }
-
-          if (!outroPreloaded && self.progress >= 0.8) {
-            outroPreloaded = true;
-            const outroVideo = outroRef.current;
-            if (outroVideo) {
-              const primeFirstFrame = () => {
-                outroVideo.pause();
-                outroVideo.currentTime = 0.001;
-              };
-
-              outroVideo.preload = 'auto';
-              outroVideo.addEventListener('loadeddata', primeFirstFrame, { once: true });
-              removeOutroPrime = () => outroVideo.removeEventListener('loadeddata', primeFirstFrame);
-              outroVideo.load();
-            }
-          }
-        },
-      });
-
-      removeScrollTrigger = () => trigger.kill();
-      ScrollTrigger.refresh();
-    })();
+    syncFromScroll(true);
+    scheduleSettledSync();
+    startVideoLoop();
 
     return () => {
       cancelled = true;
-      removeScrollTrigger?.();
       removeOutroPrime?.();
-      window.cancelAnimationFrame(frameId);
+      stopVideoLoop();
+      window.cancelAnimationFrame(scrollFrameId);
+      window.cancelAnimationFrame(settleFrameId);
+      window.cancelAnimationFrame(settleConfirmFrameId);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('pagehide', handlePageHide);
+      window.removeEventListener('pageshow', handlePageShow);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      mainVideo.removeEventListener('loadeddata', handleMainLoadedData);
     };
   }, [staticMode]);
 
