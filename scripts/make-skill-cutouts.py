@@ -10,7 +10,7 @@ from collections import deque
 from pathlib import Path
 from statistics import median
 
-from PIL import Image, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -19,8 +19,28 @@ ASSETS = (
     ("mz-icon-design.webp", "mz-icon-design-cutout.webp", 22),
     ("mz-crayon-illustrations.webp", "mz-crayon-illustrations-cutout.webp", 22),
     ("mz-minimal-zine.webp", "mz-minimal-zine-cutout.webp", 75),
-    ("build-personal-story-site.webp", "build-personal-story-site-cutout.webp", 22),
+    ("build-personal-story-site.webp", "build-personal-story-site-cutout.webp", 155),
 )
+
+PROTECTED_POLYGONS = {
+    "build-personal-story-site.webp": (
+        (
+            22,
+            (
+                (715, 465),
+                (855, 475),
+                (930, 535),
+                (975, 650),
+                (965, 785),
+                (910, 835),
+                (820, 825),
+                (755, 765),
+                (700, 665),
+                (690, 550),
+            ),
+        ),
+    ),
+}
 
 EDGE_FEATHER_RADIUS = 0.65
 
@@ -97,6 +117,15 @@ def create_cutout(source: Path, output: Path, tolerance: int) -> None:
 
     key = sample_border_key(image)
     alpha = connected_background_mask(image, key, tolerance)
+
+    # This cover needs a strong threshold to remove the warm crayon floor,
+    # while the cat's pale exterior fur needs the original conservative mask.
+    for protected_tolerance, points in PROTECTED_POLYGONS.get(source.name, ()):
+        protected_alpha = connected_background_mask(image, key, protected_tolerance)
+        protected_region = Image.new("L", image.size, 0)
+        ImageDraw.Draw(protected_region).polygon(points, fill=255)
+        alpha = Image.composite(protected_alpha, alpha, protected_region)
+
     image.putalpha(alpha)
     image.save(output, "WEBP", lossless=True, quality=100, method=6, exact=True)
 
