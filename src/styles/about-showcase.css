@@ -78,6 +78,13 @@
   letter-spacing: 0.14em;
 }
 
+.about-chapters__heading h2,
+.about-contacts__heading h2 {
+  margin: 0;
+  font: inherit;
+  letter-spacing: inherit;
+}
+
 .about-showcase {
   display: grid;
   gap: 1.25rem;

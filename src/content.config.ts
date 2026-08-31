@@ -7,6 +7,7 @@ const posterKeySchema = z.enum([
   'mz-icon-design',
   'mz-crayon-illustrations',
   'mz-minimal-zine',
+  'build-personal-story-site',
 ]);
 
 const works = defineCollection({

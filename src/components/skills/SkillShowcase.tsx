@@ -17,10 +17,11 @@ interface SkillShowcaseProps {
   skills: SkillProject[];
 }
 
-const SKILL_ART: Partial<Record<ProjectPosterKey, string>> = {
-  'mz-icon-design': '/images/skills/mz-icon-design-cutout.webp',
-  'mz-crayon-illustrations': '/images/skills/mz-crayon-illustrations-cutout.webp',
-  'mz-minimal-zine': '/images/skills/mz-minimal-zine-cutout.webp',
+const SKILL_ART: Partial<Record<ProjectPosterKey, { src: string; width: number; height: number }>> = {
+  'mz-icon-design': { src: '/images/skills/mz-icon-design-cutout.webp', width: 1024, height: 1024 },
+  'mz-crayon-illustrations': { src: '/images/skills/mz-crayon-illustrations-cutout.webp', width: 1024, height: 1024 },
+  'mz-minimal-zine': { src: '/images/skills/mz-minimal-zine-cutout.webp', width: 1024, height: 1024 },
+  'build-personal-story-site': { src: '/images/skills/build-personal-story-site-cutout.webp', width: 1024, height: 1024 },
 };
 
 function ExternalArrow() {
@@ -184,7 +185,7 @@ export default function SkillShowcase({ skills }: SkillShowcaseProps) {
                 <span className="skill-card__summary">{skill.summary}</span>
               </span>
               <span className="skill-card__art" data-skill-art aria-hidden="true">
-                <img src={artwork} alt="" loading="lazy" decoding="async" draggable={false} />
+                <img src={artwork.src} width={artwork.width} height={artwork.height} alt="" loading="lazy" decoding="async" draggable={false} />
               </span>
               <span id={descriptionId} className="sr-only">{skill.previewAlt} {skill.linkLabel}，在新标签页打开。</span>
             </span>

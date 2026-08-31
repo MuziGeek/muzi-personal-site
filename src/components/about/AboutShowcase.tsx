@@ -61,7 +61,7 @@ function AboutDialog({ section, onClose }: { section: AboutSection; onClose: () 
             </ul>
           </div>
           <figure className="about-dialog__art">
-            <img src={section.artSrc} alt={section.artAlt} />
+            <img src={section.artSrc} width="1024" height="1024" alt={section.artAlt} />
           </figure>
         </div>
 
@@ -259,7 +259,7 @@ export default function AboutShowcase() {
                 <span className="about-card__meta">{section.meta}</span>
               </span>
               <span className="about-card__art" aria-hidden="true">
-                <img src={section.artSrc} alt="" loading="lazy" decoding="async" draggable={false} />
+                <img src={section.artSrc} width="1024" height="1024" alt="" loading="lazy" decoding="async" draggable={false} />
               </span>
               <span className="about-card__open" aria-hidden="true">
                 <ArrowUpRightIcon size={18} weight="bold" />

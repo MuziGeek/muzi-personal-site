@@ -4,6 +4,8 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import SkillShowcase from '../../components/skills/SkillShowcase';
 import WorksShowcase from '../../components/works/WorksShowcase';
 import { getGitHubStarCounts } from '../../lib/githubStars';
+import '../../styles/skill-showcase.css';
+import '../../styles/works-showcase.css';
 
 const entries = (await getCollection('openSource', ({ data }) => !data.draft))
   .sort((a, b) => a.data.order - b.data.order);

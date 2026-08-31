@@ -49,11 +49,11 @@ export default function CatCompanion({ mode, direction }: Props) {
   return (
     <div ref={rootRef} className="cat-companion" data-mode={mode} data-direction={direction ?? undefined} aria-hidden="true">
       <div className="cat-companion__idle">
-        <img className="cat-companion__shadow" src="/images/creative-book/cat-shadow.svg" alt="" />
-        <img ref={tailRef} className="cat-companion__tail" src="/images/creative-book/cat-idle-tail-v2.png" alt="" />
-        <img ref={bodyRef} className="cat-companion__body" src="/images/creative-book/cat-idle-body-v2.png" alt="" />
-        <img ref={headRef} className="cat-companion__head" src="/images/creative-book/cat-idle-head-v2.png" alt="" />
-        <img ref={pupilsRef} className="cat-companion__pupils" src="/images/creative-book/cat-pupils.svg" alt="" />
+        <img className="cat-companion__shadow" src="/images/creative-book/cat-shadow.svg" width="1000" height="1000" alt="" />
+        <img ref={tailRef} className="cat-companion__tail" src="/images/creative-book/cat-idle-tail-v2.png" width="1254" height="1254" alt="" />
+        <img ref={bodyRef} className="cat-companion__body" src="/images/creative-book/cat-idle-body-v2.png" width="1254" height="1254" alt="" />
+        <img ref={headRef} className="cat-companion__head" src="/images/creative-book/cat-idle-head-v2.png" width="1254" height="1254" alt="" />
+        <img ref={pupilsRef} className="cat-companion__pupils" src="/images/creative-book/cat-pupils.svg" width="1000" height="1000" alt="" />
       </div>
       <div className="cat-companion__runner"><span /></div>
     </div>

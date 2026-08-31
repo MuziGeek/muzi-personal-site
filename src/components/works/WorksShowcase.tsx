@@ -57,7 +57,7 @@ function ProjectCard({ project, index, active }: { project: WorksProject; index:
           <div className="works-card__content">
             <h2 id={titleId}>
               {project.posterKey === 'munan-gallery' && (
-                <img className="works-card__brand-mark" src="/images/works/munan-picture/munan-knit-leaf.svg" alt="" />
+                <img className="works-card__brand-mark" src="/images/works/munan-picture/munan-knit-leaf.svg" width="160" height="160" alt="" />
               )}
               <a className="works-card__title-link" href={project.projectUrl} target="_blank" rel="noreferrer noopener">
                 {project.title}

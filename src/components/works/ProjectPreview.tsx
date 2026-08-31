@@ -134,6 +134,8 @@ function MunanProductDemo({ active, previewAlt }: Pick<ProjectPreviewProps, 'act
         <img
           className="munan-demo__fallback-image"
           src="/images/works/munan-picture/mascot-demo/fallback.webp"
+          width="640"
+          height="640"
           alt=""
           draggable={false}
         />
@@ -176,6 +178,8 @@ function MunanProductDemo({ active, previewAlt }: Pick<ProjectPreviewProps, 'act
         <img
           className="munan-demo__brand-leaf"
           src="/images/works/munan-picture/munan-knit-leaf.svg"
+          width="160"
+          height="160"
           alt=""
           draggable={false}
         />
@@ -187,6 +191,8 @@ function MunanProductDemo({ active, previewAlt }: Pick<ProjectPreviewProps, 'act
             <img
               className="munan-demo__mascot-image"
               src={mascot.src}
+              width="640"
+              height="640"
               alt=""
               loading={mascotIndex === 0 ? 'eager' : 'lazy'}
               decoding="async"

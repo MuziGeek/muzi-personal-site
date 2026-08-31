@@ -369,7 +369,17 @@ export default function ScrollytellingHome() {
       aria-label="Muzi 个人网站滚动叙事"
     >
       <div className="story-stage">
-        <img ref={posterRef} className="story-poster" src={POSTER} alt="" aria-hidden="true" />
+        <img
+          ref={posterRef}
+          className="story-poster"
+          src={POSTER}
+          width="1920"
+          height="1080"
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+          fetchPriority="high"
+        />
 
         <div className="story-media" aria-hidden="true">
           <video
@@ -457,7 +467,7 @@ export default function ScrollytellingHome() {
 
       <div className="story-static" aria-hidden={!staticMode}>
         <div className="story-static__hero">
-          <img src={POSTER} alt="木子站在暖白色背景中" />
+          <img src={POSTER} width="1920" height="1080" alt="木子站在暖白色背景中" />
           <div>
             <p className="story-static__wordmark">Muzi</p>
             <p>作品、笔记，以及持续发生的创作。</p>

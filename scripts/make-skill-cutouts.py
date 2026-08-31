@@ -19,6 +19,7 @@ ASSETS = (
     ("mz-icon-design.webp", "mz-icon-design-cutout.webp", 22),
     ("mz-crayon-illustrations.webp", "mz-crayon-illustrations-cutout.webp", 22),
     ("mz-minimal-zine.webp", "mz-minimal-zine-cutout.webp", 75),
+    ("build-personal-story-site.webp", "build-personal-story-site-cutout.webp", 22),
 )
 
 EDGE_FEATHER_RADIUS = 0.65

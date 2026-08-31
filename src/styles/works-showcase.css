@@ -34,7 +34,7 @@
   grid-template-columns: minmax(0, 22.25rem) minmax(0, 1fr);
   gap: 2.25rem;
   width: 100%;
-  height: 18.75rem;
+  min-height: 18.75rem;
   padding: 1.375rem 1.625rem;
   color: inherit;
   background: var(--paper-light);
@@ -125,6 +125,7 @@
   color: var(--muted);
   font-size: 0.96rem;
   line-height: 1.75;
+  overflow-wrap: anywhere;
 }
 
 .works-card__cta {

@@ -1,17 +1,17 @@
 @import './font-face.css';
 @import './tokens.css';
-@import './creative-book.css';
-@import './scrollytelling.css';
 
 :root { --paper: var(--paper-primary); --navy: var(--ink-primary); --mustard: var(--accent-brown); --rust: #8a6243; --muted: var(--ink-muted); }
 * { box-sizing: border-box; }
 html { overflow-x: clip; scroll-behavior: smooth; }
 body { min-width: 20rem; margin: 0; overflow-x: clip; color: var(--navy); background: var(--paper); font-family: var(--body); font-size: 16px; line-height: 1.7; text-rendering: optimizeLegibility; }
 a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 0.22em; }
+a, button { touch-action: manipulation; -webkit-tap-highlight-color: rgb(184 144 104 / 0.22); }
 button { color: inherit; font: inherit; }
 img { display: block; max-width: 100%; }
 .mz-spot-icon { height: auto; object-fit: contain; }
 h1, h2, h3, p { margin-top: 0; }
+h1, h2, h3 { text-wrap: balance; }
 :focus-visible { outline: 3px solid var(--mustard); outline-offset: 4px; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .skip-link { position: fixed; top: 0.75rem; left: 0.75rem; z-index: 1000; padding: 0.45rem 0.75rem; color: var(--navy); background: var(--mustard); transform: translateY(-150%); }

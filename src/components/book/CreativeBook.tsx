@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { gsap } from 'gsap';
+import '../../styles/creative-book.css';
 import CatCompanion from './CatCompanion';
 import { bookReducer, initialBookState } from './bookMachine';
 import type { BookDirection, BookPage, CreativeBookProps } from './types';
@@ -7,12 +8,12 @@ import YarnCursor from './YarnCursor';
 
 const pages: BookPage[] = [
   { id: 'cover', kind: 'cover', title: 'Muzi Creative Book', ariaLabel: '封面' },
-  { id: 'contents', kind: 'contents', title: 'Contents', ariaLabel: '目录' },
+  { id: 'contents', kind: 'contents', title: 'Contents', hash: 'contents', ariaLabel: '目录' },
   { id: 'about', kind: 'about', title: 'About', hash: 'about', ariaLabel: '关于 Muzi' },
   { id: 'works', kind: 'works', title: 'Works', hash: 'works', ariaLabel: '作品' },
-  { id: 'systems', kind: 'systems', title: 'Design Systems', ariaLabel: '设计系统' },
+  { id: 'systems', kind: 'systems', title: 'Design Systems', hash: 'systems', ariaLabel: '设计系统' },
   { id: 'notes', kind: 'notes', title: 'Notes', hash: 'notes', ariaLabel: '笔记' },
-  { id: 'back', kind: 'back', title: 'Back Cover', ariaLabel: '封底' },
+  { id: 'back', kind: 'back', title: 'Back Cover', hash: 'back', ariaLabel: '封底' },
 ];
 
 const hashToIndex = new Map(pages.flatMap((page, index) => (page.hash ? [[page.hash, index] as const] : [])));
@@ -134,13 +135,19 @@ export default function CreativeBook({ works, notes }: CreativeBookProps) {
 
   const entries = (items: CreativeBookProps['works'], empty: string) => items.length ? <ul className="book-page__entries">{items.slice(0, 3).map((entry) => <li key={entry.id}><a href={entry.href}>{entry.title}<span>{entry.summary}</span></a></li>)}</ul> : <p className="book-page__empty">{empty}</p>;
 
+  const contentsControl = (page: BookPage, mobile: boolean) => {
+    const label = <><span>{String(pages.indexOf(page) + 1).padStart(2, '0')}</span>{page.title}<i aria-hidden="true">↗</i></>;
+    if (mobile) return <a href={`#${page.hash ?? page.id}`}>{label}</a>;
+    return <button type="button" onClick={() => runTransition(pages.indexOf(page))} data-cursor-interactive>{label}</button>;
+  };
+
   const renderContents = (page: BookPage, mobile = false) => {
     const headingId = `${mobile ? 'mobile-' : ''}book-heading-${page.id}`;
-    const Heading = page.kind === 'cover' && !mobile ? 'h1' : 'h2';
+    const Heading = 'h2';
     return <article className={`book-page book-page--${page.kind}`} aria-labelledby={headingId}>
       <p className="book-page__number" aria-hidden="true">{String(pages.indexOf(page) + 1).padStart(2, '0')} / {String(pages.length).padStart(2, '0')}</p>
       {page.kind === 'cover' && <><Heading id={headingId}>Muzi <em>Creative Book</em></Heading><p className="book-page__intro">作品、笔记与仍在发生的创作过程。</p>{!mobile && <button className="book-button" type="button" onClick={openBook} data-cursor-interactive>Open the book <span aria-hidden="true">↗</span></button>}{mobile && <p className="book-page__note">向下翻阅</p>}</>}
-      {page.kind === 'contents' && <><Heading id={headingId}>Contents</Heading><ol className="book-contents">{pages.slice(2).map((item) => <li key={item.id}><button type="button" onClick={() => runTransition(pages.indexOf(item))} data-cursor-interactive><span>{String(pages.indexOf(item) + 1).padStart(2, '0')}</span>{item.title}<i aria-hidden="true">↗</i></button></li>)}</ol></>}
+      {page.kind === 'contents' && <><Heading id={headingId}>Contents</Heading><ol className="book-contents">{pages.slice(2).map((item) => <li key={item.id}>{contentsControl(item, mobile)}</li>)}</ol></>}
       {page.kind === 'about' && <><Heading id={headingId}>About</Heading><p className="book-page__lead">Hi, I&apos;m Muzi.</p><p>这里记录作品、技术笔记，以及一些个人思考。它像一本持续被补写的创作手册。</p><a className="book-page__link" href="/about/">阅读 About <span aria-hidden="true">→</span></a></>}
       {page.kind === 'works' && <><Heading id={headingId}>Works</Heading><p className="book-page__lead">一些正在生长的项目与实践。</p>{entries(works, '作品正在整理中。')}<a className="book-page__link" href="/works/">查看全部作品 <span aria-hidden="true">→</span></a></>}
       {page.kind === 'systems' && <><Heading id={headingId}>Design Systems</Heading><p className="book-page__lead">让创作可以被持续使用的视觉语言。</p><div className="book-page__scribble" aria-hidden="true"><span>paper</span><span>type</span><span>motion</span></div><p className="book-page__empty">相关内容正在整理中。</p></>}
@@ -152,6 +159,7 @@ export default function CreativeBook({ works, notes }: CreativeBookProps) {
   const renderVisualPage = (page: BookPage, className: string) => <div className={`book-visual-page ${className} book-visual-page--${page.kind}`} aria-hidden="true"><span>{String(pages.indexOf(page) + 1).padStart(2, '0')} / {String(pages.length).padStart(2, '0')}</span><div>{page.kind === 'cover' ? <>Muzi <em>Creative Book</em></> : page.title}</div></div>;
 
   return <section ref={bookRef} className="creative-book" data-phase={state.phase} aria-label="Muzi Creative Book">
+    <h1 className="sr-only">Muzi Creative Book</h1>
     <YarnCursor />
     <p className="sr-only" aria-live="polite">{isOpen ? `第 ${state.currentIndex + 1} 页，共 ${pages.length} 页：${currentPage.ariaLabel}` : 'Muzi Creative Book 封面。按 Enter 打开。'}</p>
     <div className="book-shell">
@@ -168,7 +176,7 @@ export default function CreativeBook({ works, notes }: CreativeBookProps) {
       </div>
       <div className="book-navigation" aria-label="书本翻页控制"><button type="button" onClick={() => runTransition(state.currentIndex - 1)} disabled={!canGoPrevious} aria-label="上一页" data-cursor-interactive>← <span>上一页</span></button><button type="button" onClick={() => runTransition(state.currentIndex + 1)} disabled={!canGoNext} aria-label="下一页" data-cursor-interactive><span>下一页</span> →</button></div>
     </div>
-    <div className="book-mobile-scroll">{pages.map((page) => <div key={page.id} className="book-mobile-scroll__chapter">{renderContents(page, true)}</div>)}</div>
+    <div className="book-mobile-scroll">{pages.map((page) => <div key={page.id} id={page.hash ?? 'book-cover'} className="book-mobile-scroll__chapter">{renderContents(page, true)}</div>)}</div>
     <p className="book-hint">{isOpen ? '← → 翻页 · Esc 返回目录' : '按 Enter 或点击打开'}</p>
   </section>;
 }
