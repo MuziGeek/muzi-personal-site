@@ -1,8 +1,8 @@
 ---
-title: Build Personal Story Site
-summary: 生成个人网站
+title: Personal Story Studio
+summary: 0 基础可用的滚动叙事个人网站生成 skill
 kind: skill
-repoUrl: https://github.com/MuziGeek/build-personal-story-site
+repoUrl: https://github.com/MuziGeek/personal-story-studio
 linkLabel: 查看 GitHub
 order: 4
 posterKey: build-personal-story-site
