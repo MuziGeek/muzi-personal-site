@@ -54,12 +54,14 @@ const openSource = defineCollection({
 
 const bookmarks = defineCollection({
   loader: glob({ base: './src/content/bookmarks', pattern: '**/*.{md,mdx}' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string().min(1),
     summary: z.string().min(1).optional(),
     url: z.url(),
     order: z.number().int().nonnegative().default(0),
     draft: z.boolean().default(true),
+    cover: image().optional(),
+    coverAlt: z.string().min(1).optional(),
   }),
 });
 

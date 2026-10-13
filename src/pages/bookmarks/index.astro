@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import '../../styles/content-hubs.css';
 
@@ -17,7 +18,7 @@ const bookmarks = (await getCollection('bookmarks', ({ data }) => !data.draft))
 
     {bookmarks.length > 0 ? (
       <ul class="bookmark-grid">
-        {bookmarks.map((bookmark) => (
+        {bookmarks.map((bookmark, index) => (
           <li>
             <a
               class="bookmark-card"
@@ -26,10 +27,25 @@ const bookmarks = (await getCollection('bookmarks', ({ data }) => !data.draft))
               rel="noreferrer noopener"
               aria-label={`${bookmark.data.title}：打开链接（在新标签页打开）`}
             >
-              <span class="bookmark-card__domain">{bookmark.domain}</span>
-              <h2>{bookmark.data.title}</h2>
-              {bookmark.data.summary && <p>{bookmark.data.summary}</p>}
-              <span class="bookmark-card__action">打开链接 <span aria-hidden="true">↗</span></span>
+              {bookmark.data.cover && (
+                <span class="bookmark-card__cover" aria-hidden="true">
+                  <Image
+                    src={bookmark.data.cover}
+                    alt=""
+                    widths={[360, 540, 720]}
+                    sizes="(min-width: 60rem) 33vw, (min-width: 48rem) 50vw, calc(100vw - 2.5rem)"
+                    loading={index < 3 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    quality={85}
+                  />
+                </span>
+              )}
+              <span class="bookmark-card__body">
+                <span class="bookmark-card__domain">{bookmark.domain}</span>
+                <h2>{bookmark.data.title}</h2>
+                {bookmark.data.summary && <p>{bookmark.data.summary}</p>}
+                <span class="bookmark-card__action">打开链接 <span aria-hidden="true">↗</span></span>
+              </span>
             </a>
           </li>
         ))}
