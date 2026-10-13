@@ -3,6 +3,21 @@
   padding-block: clamp(2rem, 5vw, 4rem) clamp(6rem, 11vw, 10rem);
 }
 
+.bookmarks-head {
+  margin-bottom: 2rem;
+}
+
+.bookmarks-head .page-label {
+  margin-bottom: 0.5rem;
+}
+
+.bookmarks-head__count {
+  margin: 0;
+  color: var(--ink-subtle);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+}
+
 .bookmark-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
@@ -45,13 +60,6 @@
   flex-direction: column;
   flex: 1;
   padding: clamp(1.1rem, 2vw, 1.5rem);
-}
-
-.bookmark-card__domain {
-  margin-bottom: 0.6rem;
-  color: var(--muted);
-  font-size: 0.82rem;
-  overflow-wrap: anywhere;
 }
 
 .bookmark-card h2 {

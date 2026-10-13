@@ -335,7 +335,7 @@
   }
 
   .story-stage::after {
-    background: linear-gradient(180deg, transparent 43%, rgb(250 247 240 / .14) 56%, rgb(250 247 240 / .9) 100%);
+    background: linear-gradient(180deg, transparent 32%, rgb(250 247 240 / .55) 58%, rgb(250 247 240 / .95) 100%);
   }
 
   .body--story .site-header__bar {

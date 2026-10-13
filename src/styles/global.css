@@ -80,6 +80,7 @@ h1, h2, h3 { text-wrap: balance; }
 .about-section__hello { margin-bottom: 0.55rem; font-family: var(--display); font-size: clamp(2rem, 4vw, 3.2rem); color: var(--navy) !important; }
 .listing-page, .about-page { min-height: calc(100dvh - 13rem); padding-block: clamp(2rem, 5vw, 4rem) clamp(6rem, 11vw, 8rem); }
 .article-page, .not-found { min-height: calc(100dvh - 13rem); padding-block: clamp(4rem, 10vw, 8rem); }
+.not-found { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
 .listing-page .content-list { max-width: 52rem; }
 .about-page { max-width: 52rem; }
 .about-page > div { max-width: 32rem; }
@@ -99,7 +100,7 @@ h1, h2, h3 { text-wrap: balance; }
 .prose ul, .prose ol { padding-inline-start: 1.35rem; }
 .prose li + li { margin-top: 0.35rem; }
 .prose code { padding: 0.1rem 0.3rem; color: var(--navy); background: color-mix(in srgb, var(--mustard) 24%, var(--paper)); overflow-wrap: anywhere; }
-.prose pre { max-width: 100%; padding: 1rem 1.15rem; overflow-x: auto; overscroll-behavior-inline: contain; border: 1px solid var(--rule); border-radius: 0.75rem; background: var(--ink-primary); tab-size: 2; }
+.prose pre { max-width: 100%; padding: 1rem 1.15rem; overflow-x: auto; overscroll-behavior-inline: contain; border: 1px solid var(--rule); border-radius: 0.75rem; background: var(--ink-primary); tab-size: 2; scrollbar-width: thin; scrollbar-color: rgb(246 241 231 / .35) transparent; }
 .prose pre code { padding: 0; color: var(--paper-light); background: transparent; overflow-wrap: normal; word-break: normal; }
 .prose blockquote { margin: 2rem 0; padding: 0.25rem 0 0.25rem 1.1rem; border-inline-start: 3px solid var(--accent-brown); }
 .prose blockquote p { color: var(--ink-primary); }

@@ -33,7 +33,8 @@ function ExternalArrow() {
 }
 
 function GitHubStar({ count }: { count: number | null }) {
-  const label = count === null ? 'GitHub Stars 暂不可用' : `${count} GitHub Stars`;
+  if (count === null || count <= 0) return null;
+  const label = `${count} GitHub Stars`;
 
   return (
     <span className="skill-card__stars" aria-label={label}>

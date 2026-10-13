@@ -24,6 +24,12 @@
   margin-bottom: 3rem;
 }
 
+/* 只有一个文件夹时居中，避免桌面端右侧大面积空白 */
+.folders-grid--single {
+  grid-template-columns: minmax(min(100%, 40rem), 40rem);
+  justify-content: center;
+}
+
 .folder {
   display: block;
   width: 100%;

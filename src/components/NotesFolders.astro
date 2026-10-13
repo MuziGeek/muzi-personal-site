@@ -28,7 +28,7 @@ const folderWord = (n: number) => `${n} 个文件夹`;
   </header>
 
   <div class="folders-view" data-folders-view>
-    <div class="folders-grid">
+    <div class={`folders-grid${folders.length === 1 ? ' folders-grid--single' : ''}`}>
       {
         folders.map((folder, fi) => (
           <button

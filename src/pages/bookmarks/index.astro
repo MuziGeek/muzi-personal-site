@@ -5,16 +5,16 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import '../../styles/content-hubs.css';
 
 const bookmarks = (await getCollection('bookmarks', ({ data }) => !data.draft))
-  .sort((a, b) => a.data.order - b.data.order)
-  .map((entry) => ({
-    ...entry,
-    domain: new URL(entry.data.url).hostname.replace(/^www\./, ''),
-  }));
+  .sort((a, b) => a.data.order - b.data.order);
 ---
 
 <BaseLayout title="Bookmarks" description="Muzi 收藏的网站、工具与项目。">
   <section class="hub-page page-shell" aria-labelledby="bookmarks-title">
     <h1 id="bookmarks-title" class="sr-only">Bookmarks</h1>
+    <header class="bookmarks-head">
+      <p class="page-label">收藏 · Bookmarks</p>
+      <p class="bookmarks-head__count">{bookmarks.length} 个收藏</p>
+    </header>
 
     {bookmarks.length > 0 ? (
       <ul class="bookmark-grid">
@@ -41,7 +41,6 @@ const bookmarks = (await getCollection('bookmarks', ({ data }) => !data.draft))
                 </span>
               )}
               <span class="bookmark-card__body">
-                <span class="bookmark-card__domain">{bookmark.domain}</span>
                 <h2>{bookmark.data.title}</h2>
                 {bookmark.data.summary && <p>{bookmark.data.summary}</p>}
                 <span class="bookmark-card__action">打开链接 <span aria-hidden="true">↗</span></span>

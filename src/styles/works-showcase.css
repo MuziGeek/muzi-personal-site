@@ -10,6 +10,21 @@
   scroll-margin-top: 1.5rem;
 }
 
+.works-head {
+  margin-bottom: 2rem;
+}
+
+.works-head .page-label {
+  margin-bottom: 0.5rem;
+}
+
+.works-head__count {
+  margin: 0;
+  color: var(--ink-subtle);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+}
+
 .works-showcase {
   display: grid;
   gap: clamp(2rem, 4vw, 3.5rem);

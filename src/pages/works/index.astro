@@ -26,6 +26,10 @@ const projects = works.map(({ id, data }) => ({
   <section class="works-page" aria-labelledby="works-title">
     <h1 id="works-title" class="sr-only">Works</h1>
     <div id="selected-works" class="works-archive page-shell">
+      <header class="works-head">
+        <p class="page-label">作品 · Works</p>
+        <p class="works-head__count">{projects.length} 个作品</p>
+      </header>
       {projects.length > 0
         ? <WorksShowcase projects={projects} variant="featured" client:visible />
         : <p class="empty-state">可公开访问的产品正在整理中。</p>}
