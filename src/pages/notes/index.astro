@@ -1,19 +1,62 @@
 ---
 import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import NotesGrid from '../../components/NotesGrid.astro';
+import NotesFolders, { type NotesFolder } from '../../components/NotesFolders.astro';
 import '../../styles/notes-grid.css';
+import '../../styles/notes-folders.css';
 import '../../styles/notes-article-transition.css';
 
 const notes = (await getCollection('notes', ({ data }) => !data.draft))
   .sort((a, b) => (b.data.publishedAt?.getTime() ?? 0) - (a.data.publishedAt?.getTime() ?? 0));
+
+interface SeriesDef {
+  id: string;
+  name: string;
+  sub: string;
+  test: (id: string) => boolean;
+}
+
+// 系列归属按文章 id 前缀判定；新增系列时在这里加一条即可。
+const SERIES_DEFS: SeriesDef[] = [
+  {
+    id: 'mu-ai-agent',
+    name: 'Mu AI Agent',
+    sub: '木南 AI 智能体开发笔记',
+    test: (id) => id.startsWith('mu-ai-agent-'),
+  },
+];
+
+const dateFormatter = new Intl.DateTimeFormat('zh-CN', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  timeZone: 'Asia/Shanghai',
+});
+const formatDate = (date: Date) => dateFormatter.format(date).replaceAll('/', '.');
+
+const folders: NotesFolder[] = SERIES_DEFS.map((def) => {
+  const items = notes.filter((n) => def.test(n.id));
+  if (items.length === 0) return null;
+  const times = items.map((n) => n.data.publishedAt!.getTime());
+  return {
+    id: def.id,
+    name: def.name,
+    sub: def.sub,
+    dateLabel: `${formatDate(new Date(Math.min(...times)))} – ${formatDate(new Date(Math.max(...times)))}`,
+    notes: items,
+  };
+}).filter((f): f is NotesFolder => f !== null);
+
+const inFolder = new Set(folders.flatMap((f) => f.notes.map((n: CollectionEntry<'notes'>) => n.id)));
+const loose = notes.filter((n) => !inFolder.has(n.id));
 ---
 
 <BaseLayout title="Notes" description="Muzi 的日常、学习与思考笔记。" transitions>
   <section class="listing-page page-shell" aria-labelledby="notes-title">
     <h1 id="notes-title" class="sr-only">Notes</h1>
-    {notes.length > 0
-      ? <NotesGrid entries={notes} />
+    {folders.length > 0 || loose.length > 0
+      ? <NotesFolders folders={folders} loose={loose} total={notes.length} />
       : <p class="empty-state">可公开的笔记正在整理中。</p>}
   </section>
 </BaseLayout>

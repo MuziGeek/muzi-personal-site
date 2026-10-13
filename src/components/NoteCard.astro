@@ -1,0 +1,43 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entry: CollectionEntry<'notes'>;
+  index?: number;
+}
+
+const { entry, index = 0 } = Astro.props;
+const dateFormatter = new Intl.DateTimeFormat('zh-CN', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  timeZone: 'Asia/Shanghai',
+});
+
+const formatDate = (date: Date) => dateFormatter.format(date).replaceAll('/', '.');
+const publishedAt = entry.data.publishedAt!;
+---
+
+<li class="notes-grid__item" style={`--i: ${index}`}>
+  <a class="notes-card" href={`/notes/${entry.id}/`}>
+    <span class="notes-card__cover" aria-hidden="true">
+      <Image
+        src={entry.data.cover!}
+        alt=""
+        widths={[335, 365, 670, 730]}
+        sizes="(min-width: 52rem) 365px, calc(100vw - 2.5rem)"
+        loading={index < 2 ? 'eager' : 'lazy'}
+        decoding="async"
+        quality={90}
+      />
+    </span>
+    <div class="notes-card__info">
+      <time class="notes-card__date" datetime={publishedAt.toISOString()}>
+        {formatDate(publishedAt)}
+      </time>
+      <h2 class="notes-card__title">{entry.data.title}</h2>
+      <p class="notes-card__excerpt">{entry.data.summary}</p>
+    </div>
+  </a>
+</li>

@@ -113,6 +113,7 @@ h1, h2, h3 { text-wrap: balance; }
 .site-footer { display: grid; gap: 1.5rem; padding-block: 2rem 3rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.88rem; }
 .site-footer p { margin: 0; }
 .site-footer__meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; }
+@media (max-width: 47.99rem) { .site-footer__meta { flex-wrap: nowrap; } }
 .site-footer a { color: var(--navy); }
 @keyframes rise-in { from { opacity: 0; transform: translateY(0.5rem); } to { opacity: 1; transform: translateY(0); } }
 @media (min-width: 48rem) { .hero { grid-template-columns: minmax(0, 1fr) minmax(19rem, 0.78fr); } .hero__media { justify-self: end; } .hero__media img { height: clamp(31rem, 48vw, 46rem); } .content-section { grid-template-columns: minmax(13rem, 0.64fr) minmax(0, 1.36fr); } .content-section--reverse { grid-template-columns: minmax(0, 1.36fr) minmax(13rem, 0.64fr); } .content-section--reverse .section-intro { order: 2; justify-self: end; } .content-section--reverse .content-list { order: 1; } .content-list a { grid-template-columns: minmax(0, 1fr) auto; align-items: end; } .content-list__meta { justify-content: flex-end; text-align: right; } .about-section { grid-template-columns: minmax(11rem, 0.5fr) minmax(0, 1fr); } .site-footer { grid-template-columns: 1fr auto; align-items: end; } }

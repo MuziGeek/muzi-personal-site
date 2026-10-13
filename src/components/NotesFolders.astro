@@ -1,0 +1,214 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import NoteCard from './NoteCard.astro';
+
+export interface NotesFolder {
+  id: string;
+  name: string;
+  sub: string;
+  dateLabel: string;
+  notes: CollectionEntry<'notes'>[];
+}
+
+interface Props {
+  folders: NotesFolder[];
+  loose: CollectionEntry<'notes'>[];
+  total: number;
+}
+
+const { folders, loose, total } = Astro.props;
+const folderWord = (n: number) => `${n} 个文件夹`;
+---
+
+<div class="notes-folders" data-notes-folders>
+  <header class="notes-folders__head">
+    <p class="page-label">笔记 · Notes</p>
+    <p class="notes-folders__count">{folderWord(folders.length)} · {total} 篇</p>
+  </header>
+
+  <div class="folders-view" data-folders-view>
+    <div class="folders-grid">
+      {
+        folders.map((folder, fi) => (
+          <button
+            type="button"
+            class="folder"
+            style={`--fi: ${fi}`}
+            data-folder-open={folder.id}
+            aria-expanded="false"
+            aria-controls={`folder-panel-${folder.id}`}
+          >
+            <span class="folder__visual" aria-hidden="true">
+              <span class="folder__papers">
+                {folder.notes.slice(0, 3).map((note) => (
+                  <span class="folder__paper">
+                    <span class="folder__paper-img">
+                      <Image src={note.data.cover!} alt="" widths={[240]} quality={70} />
+                    </span>
+                  </span>
+                ))}
+              </span>
+              <span class="folder__front">
+                <span class="folder__label">{folder.name}</span>
+              </span>
+            </span>
+            <span class="folder__meta">
+              <span class="folder__sub">{folder.sub}</span>
+              <span class="folder__stat">
+                {folder.notes.length} 篇 · {folder.dateLabel}
+              </span>
+            </span>
+          </button>
+        ))
+      }
+    </div>
+
+    {
+      loose.length > 0 && (
+        <div class="loose-files">
+          <p class="page-label">散页</p>
+          <ol class="notes-grid" aria-label="未归入文件夹的笔记">
+            {loose.map((entry, i) => (
+              <NoteCard entry={entry} index={i} />
+            ))}
+          </ol>
+        </div>
+      )
+    }
+  </div>
+
+  {
+    folders.map((folder) => (
+      <section
+        class="folder-panel"
+        id={`folder-panel-${folder.id}`}
+        data-folder-panel={folder.id}
+        hidden
+        aria-label={`${folder.name} 文件夹`}
+      >
+        <div class="folder-panel__bar">
+          <button type="button" class="folder-panel__back" data-folder-close>
+            ← 返回
+          </button>
+          <p class="folder-panel__crumb">
+            笔记 <span aria-hidden="true">/</span> {folder.name}
+          </p>
+          <span class="folder-panel__count">{folder.notes.length} 篇</span>
+        </div>
+        <ol class="notes-grid" aria-label={`${folder.name} 的文章`}>
+          {folder.notes.map((entry, i) => (
+            <NoteCard entry={entry} index={i} />
+          ))}
+        </ol>
+      </section>
+    ))
+  }
+</div>
+
+<script>
+  (() => {
+    const rootEl = document.querySelector<HTMLElement>('[data-notes-folders]');
+    const viewEl = rootEl?.querySelector<HTMLElement>('[data-folders-view]');
+    if (!rootEl || !viewEl) return;
+    const root: HTMLElement = rootEl;
+    const view: HTMLElement = viewEl;
+    const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-folder-panel]'));
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let openId: string | null = null;
+    let busy = false;
+    let lastBtn: HTMLButtonElement | null = null;
+
+    const panelOf = (id: string): HTMLElement | undefined =>
+      panels.find((p) => p.dataset.folderPanel === id);
+
+    function open(id: string, btn: HTMLButtonElement) {
+      if (busy || openId === id) return;
+      busy = true;
+      lastBtn = btn;
+      openId = id;
+      btn.setAttribute('aria-expanded', 'true');
+      root.classList.add('is-folder-open');
+      const panel = panelOf(id);
+      if (!panel) {
+        busy = false;
+        return;
+      }
+      const backBtn = panel.querySelector<HTMLElement>('[data-folder-close]');
+      if (reduced) {
+        view.hidden = true;
+        panel.hidden = false;
+        panel.classList.add('is-open');
+        backBtn?.focus({ preventScroll: true });
+        busy = false;
+        return;
+      }
+      view.classList.add('is-exiting');
+      window.setTimeout(() => {
+        view.hidden = true;
+        view.classList.remove('is-exiting');
+        panel.hidden = false;
+        void panel.offsetWidth;
+        panel.classList.add('is-entering');
+        backBtn?.focus({ preventScroll: true });
+        window.setTimeout(() => {
+          panel.classList.remove('is-entering');
+          panel.classList.add('is-open');
+          busy = false;
+        }, 500);
+      }, 230);
+    }
+
+    function close() {
+      if (busy || !openId) return;
+      busy = true;
+      const panel = panelOf(openId);
+      const btn = lastBtn;
+      if (!panel) {
+        busy = false;
+        return;
+      }
+      if (reduced) {
+        panel.classList.remove('is-open');
+        panel.hidden = true;
+        view.hidden = false;
+        root.classList.remove('is-folder-open');
+        openId = null;
+        busy = false;
+        btn?.setAttribute('aria-expanded', 'false');
+        btn?.focus({ preventScroll: true });
+        return;
+      }
+      panel.classList.remove('is-open');
+      panel.classList.add('is-exiting');
+      window.setTimeout(() => {
+        panel.hidden = true;
+        panel.classList.remove('is-exiting');
+        view.hidden = false;
+        void view.offsetWidth;
+        view.classList.add('is-entering');
+        window.setTimeout(() => {
+          view.classList.remove('is-entering');
+          busy = false;
+        }, 440);
+        root.classList.remove('is-folder-open');
+        openId = null;
+        btn?.setAttribute('aria-expanded', 'false');
+        btn?.focus({ preventScroll: true });
+      }, 260);
+    }
+
+    root.addEventListener('click', (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      const opener = target?.closest<HTMLButtonElement>('[data-folder-open]');
+      if (opener && opener.dataset.folderOpen) {
+        open(opener.dataset.folderOpen, opener);
+        return;
+      }
+      if (target?.closest('[data-folder-close]')) close();
+    });
+    root.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close();
+    });
+  })();
+</script>

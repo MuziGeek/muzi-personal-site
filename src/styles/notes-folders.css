@@ -1,0 +1,419 @@
+/* Notes 文件夹视图：书桌上的牛皮纸文件夹 */
+
+.notes-folders__head {
+  margin-bottom: 2rem;
+}
+
+.notes-folders__head .page-label {
+  margin-bottom: 0.5rem;
+}
+
+.notes-folders__count {
+  margin: 0;
+  color: var(--ink-subtle);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- 文件夹网格 ---------- */
+
+.folders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 30rem), 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.folder {
+  display: block;
+  width: 100%;
+  max-width: 40rem;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: none;
+  animation: folder-in 560ms var(--ease) both;
+  animation-delay: calc(var(--fi, 0) * 90ms);
+  transition: transform 220ms var(--ease);
+}
+
+.folder:hover {
+  transform: translateY(-4px);
+}
+
+.folder:active {
+  transform: translateY(-1px) scale(0.97);
+}
+
+.folder__visual {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  filter: drop-shadow(0 18px 28px rgb(43 41 38 / 0.14));
+  transition: filter 300ms var(--ease);
+}
+
+.folder:hover .folder__visual {
+  filter: drop-shadow(0 26px 36px rgb(43 41 38 / 0.2));
+}
+
+.folder__papers {
+  position: absolute;
+  inset: 0 3% 30% 3%;
+}
+
+/* 纸张：先是一张白纸，封面是"贴在纸上的图" */
+.folder__paper {
+  position: absolute;
+  bottom: 0;
+  width: 38%;
+  aspect-ratio: 3 / 4;
+  padding: 4% 5%;
+  background: #fffdf8;
+  border-radius: 0.4rem;
+  box-shadow:
+    0 1px 2px rgb(43 41 38 / 0.12),
+    0 8px 18px rgb(43 41 38 / 0.16);
+  transition: transform 320ms var(--ease);
+}
+
+.folder__paper-img {
+  display: block;
+  height: 56%;
+  overflow: hidden;
+  border-radius: 0.18rem;
+  box-shadow: 0 1px 4px rgb(43 41 38 / 0.18);
+}
+
+.folder__paper-img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 纸上的文字行 */
+.folder__paper::after {
+  content: "";
+  position: absolute;
+  left: 11%;
+  right: 11%;
+  bottom: 9%;
+  height: 24%;
+  background: repeating-linear-gradient(
+    180deg,
+    #d9d3c3 0 2px,
+    transparent 2px 8px
+  );
+  opacity: 0.85;
+}
+
+.folder__paper:nth-child(1) {
+  left: 0;
+  transform: rotate(-8deg) translateY(4%);
+}
+
+.folder__paper:nth-child(2) {
+  left: 31%;
+  transform: rotate(1deg) translateY(0);
+}
+
+.folder__paper:nth-child(3) {
+  right: 0;
+  transform: rotate(8deg) translateY(4%);
+}
+
+.folder:hover .folder__paper:nth-child(1) {
+  transform: rotate(-8deg) translateY(-10%);
+}
+
+.folder:hover .folder__paper:nth-child(2) {
+  transform: rotate(1deg) translateY(-15%);
+}
+
+.folder:hover .folder__paper:nth-child(3) {
+  transform: rotate(8deg) translateY(-10%);
+}
+
+.folder__front {
+  position: absolute;
+  inset: 40% 3% 6% 3%;
+  border-radius: 0.7rem 0.85rem 0.8rem 0.75rem;
+  background: linear-gradient(180deg, #e9d09e 0%, #d8b878 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.55),
+    inset 0 -18px 22px -14px rgb(110 78 36 / 0.55),
+    inset 0 -2px 0 rgb(120 85 40 / 0.28);
+}
+
+.folder__front::before {
+  position: absolute;
+  top: -11px;
+  left: 6%;
+  width: 34%;
+  height: 14px;
+  content: "";
+  background: #e9d09e;
+  border-radius: 0.5rem 0.7rem 0 0;
+}
+
+/* 纸纹：细颗粒 + 横向纤维 */
+.folder__front::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  border-radius: inherit;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.24' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23f)' opacity='0.42'/%3E%3C/svg%3E");
+  opacity: 0.3;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+/* 手贴的系列标签 */
+.folder__label {
+  position: absolute;
+  top: 14%;
+  left: 7%;
+  padding: 0.32em 0.9em 0.38em;
+  font-family: var(--display);
+  font-size: clamp(1.05rem, 2.6vw, 1.4rem);
+  line-height: 1.2;
+  color: var(--ink-primary);
+  background: #fffdf6;
+  border-radius: 0.3rem;
+  box-shadow: 0 3px 8px rgb(43 41 38 / 0.22);
+  transform: rotate(-2.5deg);
+}
+
+.folder__meta {
+  display: block;
+  padding: 1.1rem 0.25rem 0;
+}
+
+.folder__sub {
+  display: block;
+  color: var(--ink-muted);
+  font-size: 0.95rem;
+}
+
+.folder__stat {
+  display: block;
+  margin-top: 0.45rem;
+  color: var(--ink-subtle);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 散页 ---------- */
+
+.loose-files .page-label {
+  margin-bottom: 1.25rem;
+}
+
+/* 打开态：隐藏关闭态的页头，面包屑成为首行 */
+.notes-folders.is-folder-open .notes-folders__head {
+  display: none;
+}
+
+.notes-folders.is-folder-open .folders-view {
+  margin-bottom: 0;
+}
+
+/* 打开态文章网格：桌面 3–4 列，一屏可见 6 篇以上 */
+.folder-panel .notes-grid {
+  width: 100%;
+  max-width: none;
+  grid-template-columns: repeat(auto-fill, minmax(16.5rem, 1fr));
+  justify-content: start;
+}
+
+/* 卡片落在纸面上：投影实半档，边缘明暗交界明确 */
+.folder-panel .notes-card {
+  box-shadow:
+    0 2px 6px rgb(43 41 38 / 0.08),
+    0 20px 38px -22px rgb(43 41 38 / 0.28);
+}
+
+.folder-panel__bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.folder-panel__back {
+  flex: none;
+  padding: 0.42rem 1rem;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--ink-primary);
+  cursor: pointer;
+  background: var(--paper-light);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  transition:
+    transform 180ms var(--ease),
+    background-color 180ms var(--ease);
+}
+
+.folder-panel__back:hover {
+  transform: translateX(-3px);
+  background: var(--paper-secondary);
+}
+
+.folder-panel__back:active {
+  transform: scale(0.96);
+}
+
+.folder-panel__crumb {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 1.25rem;
+  color: var(--ink-primary);
+}
+
+.folder-panel__crumb span {
+  margin: 0 0.35em;
+  color: var(--ink-subtle);
+}
+
+.folder-panel__count {
+  margin-left: auto;
+  color: var(--ink-subtle);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 视图切换动效 ---------- */
+/* 形状接力：卡片像从文件夹里抽出来，从上方落入网格 */
+
+.folders-view.is-exiting {
+  animation: view-away 230ms var(--ease) both;
+}
+
+.folders-view.is-entering {
+  animation: view-back 420ms var(--ease) both;
+}
+
+.folder-panel.is-entering {
+  animation: panel-in 320ms var(--ease) both;
+}
+
+.folder-panel.is-exiting {
+  animation: panel-out 220ms var(--ease) both;
+}
+
+.folder-panel.is-entering .notes-grid__item {
+  animation: card-in 520ms var(--ease) both;
+  animation-delay: calc(80ms + var(--i, 0) * 45ms);
+}
+
+.folder-panel.is-exiting .notes-grid__item {
+  animation: card-out 200ms var(--ease) both;
+}
+
+@keyframes view-away {
+  to {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes view-back {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes panel-out {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+/* 从文件夹所在的上方进入：抽纸落定 */
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(-34px);
+  }
+}
+
+@keyframes card-out {
+  to {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+}
+
+@keyframes folder-in {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.98);
+  }
+}
+
+@media (max-width: 40rem) {
+  .folder-panel__crumb {
+    font-size: 1.05rem;
+  }
+
+  /* 移动端打开态：横式卡片，一屏可见 4 篇以上 */
+  .folder-panel .notes-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .folder-panel .notes-card {
+    flex-direction: row;
+    min-height: 7.25rem;
+  }
+
+  .folder-panel .notes-card__cover {
+    flex: none;
+    width: 7.25rem;
+    aspect-ratio: auto;
+    align-self: stretch;
+  }
+
+  .folder-panel .notes-card__info {
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.875rem 1rem;
+  }
+
+  .folder-panel .notes-card__title {
+    font-size: 1rem;
+  }
+
+  .folder-panel .notes-card__excerpt {
+    font-size: 0.82rem;
+    -webkit-line-clamp: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notes-folders *,
+  .notes-folders *::before,
+  .notes-folders *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
