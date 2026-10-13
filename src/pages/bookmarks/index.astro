@@ -40,25 +40,25 @@ const bookmarks = (await getCollection('bookmarks', ({ data }) => !data.draft))
                   />
                 </span>
               )}
-              {bookmark.data.cover && (
-                <span class="bookmark-card__zoom" aria-hidden="true">
-                  <Image
-                    src={bookmark.data.cover}
-                    alt=""
-                    widths={[480, 720, 960]}
-                    sizes="30rem"
-                    loading="lazy"
-                    decoding="async"
-                    quality={85}
-                  />
-                </span>
-              )}
               <span class="bookmark-card__body">
                 <h2>{bookmark.data.title}</h2>
                 {bookmark.data.summary && <p>{bookmark.data.summary}</p>}
                 <span class="bookmark-card__action">打开链接 <span aria-hidden="true">↗</span></span>
               </span>
             </a>
+            {bookmark.data.cover && (
+              <span class="bookmark-card__zoom" aria-hidden="true">
+                <Image
+                  src={bookmark.data.cover}
+                  alt=""
+                  widths={[480, 720, 960]}
+                  sizes="32rem"
+                  loading="lazy"
+                  decoding="async"
+                  quality={85}
+                />
+              </span>
+            )}
           </li>
         ))}
       </ul>

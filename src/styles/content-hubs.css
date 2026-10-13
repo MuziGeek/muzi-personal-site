@@ -1,7 +1,6 @@
 .hub-page {
   min-height: calc(100dvh - 13rem);
   padding-block: clamp(2rem, 5vw, 4rem) clamp(6rem, 11vw, 10rem);
-  overflow-x: clip;
 }
 
 .bookmarks-head {
@@ -28,21 +27,11 @@
   list-style: none;
 }
 
-.bookmark-grid > li {
-  position: relative;
-}
-
-.bookmark-grid > li:hover,
-.bookmark-grid > li:focus-within {
-  z-index: 2;
-}
-
 .bookmark-card {
-  position: relative;
-  container-type: inline-size;
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow: hidden;
   color: inherit;
   text-decoration: none;
   background: var(--paper-light);
@@ -57,42 +46,43 @@
   overflow: hidden;
   background: var(--paper-dark);
   border-bottom: 1px solid var(--rule);
-  border-radius: 1rem 1rem 0 0;
 }
 
-/* 悬浮放大预览：封面原图完整浮现，居中于封面区域 */
+/* 悬浮放大预览：视口居中的 Quick Look 浮层，完整展示封面原图，不会被容器裁剪 */
 .bookmark-card__zoom {
-  position: absolute;
+  position: fixed;
   left: 50%;
-  top: 31.25cqw;
-  z-index: 5;
-  width: min(150%, 26rem);
-  max-height: min(32rem, 72vh);
-  padding: 0.55rem;
+  top: 50%;
+  z-index: 50;
+  width: min(32rem, 88vw);
+  max-height: 84vh;
+  padding: 0.6rem;
   background: var(--paper-light);
   border: 1px solid var(--rule);
   border-radius: 0.85rem;
   box-shadow: 0 24px 60px rgba(43, 41, 38, 0.28);
   opacity: 0;
+  visibility: hidden;
   transform: translate(-50%, -50%) scale(0.96);
   pointer-events: none;
-  transition: opacity 170ms ease-in, transform 190ms ease-in;
+  transition: opacity 170ms ease-in, transform 190ms ease-in, visibility 0s linear 190ms;
 }
 
 .bookmark-card__zoom img {
   display: block;
   width: 100%;
   height: auto;
-  max-height: calc(min(32rem, 72vh) - 1.1rem);
+  max-height: calc(84vh - 1.2rem);
   object-fit: contain;
   border-radius: 0.4rem;
 }
 
-.bookmark-card:hover .bookmark-card__zoom,
-.bookmark-card:focus-visible .bookmark-card__zoom {
+.bookmark-grid > li:hover .bookmark-card__zoom,
+.bookmark-grid > li:focus-within .bookmark-card__zoom {
   opacity: 1;
+  visibility: visible;
   transform: translate(-50%, -50%) scale(1);
-  transition: opacity 240ms var(--ease), transform 280ms var(--ease);
+  transition: opacity 240ms var(--ease), transform 280ms var(--ease), visibility 0s;
 }
 
 .bookmark-card__cover img {
