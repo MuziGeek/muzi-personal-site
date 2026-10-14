@@ -52,7 +52,7 @@ const bookmarks = (await getCollection('bookmarks', ({ data }) => !data.draft))
                   src={bookmark.data.cover}
                   alt=""
                   widths={[480, 720, 960]}
-                  sizes="32rem"
+                  sizes="26rem"
                   loading="lazy"
                   decoding="async"
                   quality={85}
@@ -65,3 +65,29 @@ const bookmarks = (await getCollection('bookmarks', ({ data }) => !data.draft))
     ) : <p class="empty-state hub-empty">收藏链接正在整理中。</p>}
   </section>
 </BaseLayout>
+
+<script>
+  // 悬浮预览防截断：面板默认居中于卡片，超出 section 横向边界时平移回来
+  const section = document.querySelector('.hub-page');
+  const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (section && finePointer) {
+    const pad = 8;
+    document.querySelectorAll('.bookmark-grid > li').forEach((li) => {
+      const zoom = li.querySelector('.bookmark-card__zoom');
+      if (!zoom) return;
+      li.addEventListener('mouseenter', () => {
+        const s = section.getBoundingClientRect();
+        const c = li.getBoundingClientRect();
+        const w = zoom.offsetWidth;
+        const left = c.left + c.width / 2 - w / 2;
+        let dx = 0;
+        if (left < s.left + pad) dx = s.left + pad - left;
+        else if (left + w > s.right - pad) dx = s.right - pad - left - w;
+        zoom.style.setProperty('--zoom-dx', `${dx.toFixed(1)}px`);
+      });
+      li.addEventListener('mouseleave', () => {
+        zoom.style.setProperty('--zoom-dx', '0px');
+      });
+    });
+  }
+</script>
